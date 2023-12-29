@@ -29,6 +29,13 @@ $(document).ready(function() {
             menu.addClass("open");
         }
     });
+
+    $(document).on("change", "input[name='start_date']", function(){
+        var start_date = $(this).val();
+        var terms = ($("input[name='payment_terms']").val() == "") ? 0 : $("input[name='payment_terms']").val() - 1.00;
+        var end_date = moment(start_date).add(terms, 'months').format('MM/DD/YYYY');
+        $("input[name='end_date']").val(end_date);
+    });
 });
 
 
@@ -75,27 +82,4 @@ $("input[type=number]").change(function(){
     var value = parseFloat($(this).val());
     log(value);
     $(this).val(value.toFixed(2));
-});
-
-
-$(document).on("change", "input[name='start_date']", function(){
-    var start_date = $(this).val();
-    console.log(start_date);
-    var terms = ($("input[name='payment_terms']").val() == "") ? 0 : $("input[name='payment_terms']").val() - 1.00;
-    var end_date = moment(start_date).add(terms, 'months').format('MM/DD/YYYY');
-    $("input[name='end_date']").val(end_date);
-});
-
-$(".paymentAmount").addClass("hidden");
-
-$(document).on("change", "input[name='choose_payment']", function(){
-    var value = $(this).val();
-
-    console.log(value);
-
-    if (value == 0){
-        $(".paymentAmount").removeClass("hidden");
-    } else {
-        $(".paymentAmount").addClass("hidden");
-    }
 });
