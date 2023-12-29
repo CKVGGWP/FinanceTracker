@@ -130,29 +130,29 @@ class Auth {
         $loans = Database::table('loans')->where('user', $user->id)->get();
         $typeArr = ['0', '1', '2'];
 
-        if (empty($loans)){
-            return;
-        }
+        if (empty($loans)) return;
 
         foreach ($loans as $loan){
             $message = "";
             $checkExpenses = Database::table('expenses')->where('title', $loan->title)->where('user', $user->id)->where('MONTH(expense_date)', date('m'))->where('YEAR(expense_date)', date('Y'))->first();
 
-            if (!empty($checkExpenses)){
-                continue;
-            }
+            if (!empty($checkExpenses)) continue;
 
             $type = 3;
             
-            if ($loan->paid == 2){
-                continue;
-            }
+            if ($loan->paid == 2) continue;
 
             $today = date("Y-m-d");
             $deadline = $loan->deadline;
             $reminder_day = $loan->reminder_day;
             $reminder_date = date("Y-m-" . $reminder_day);
             $deadline_date = date("Y-m-" . $deadline);
+            $dateArr = [];
+
+            array_push($dateArr, $reminder_date);
+            array_push($dateArr, $deadline_date);
+
+            if (!in_array($today, $dateArr)) continue;
 
             if ($today == $reminder_date){
                 $message = "Your loan payment for " . $loan->title . " with amount " . $loan->amount . " is due on " . date("F j, Y", strtotime($deadline_date)) . ". Please make payment to avoid penalties.";
@@ -170,11 +170,8 @@ class Auth {
             if ($type != 2){
                 $loanReminder = Database::table('loan_reminder')->where('loanid', $loan->id)->where('user', $user->id)->where('type', $type)->where('MONTH(date)', date('m'))->where('YEAR(date)', date('Y'))->first();
     
-                if (!empty($loanReminder)){
-                    continue;
-                }
+                if (!empty($loanReminder)) continue;
             }
-
 
             $send = Mail::send(
                 $user->email,
@@ -183,7 +180,7 @@ class Auth {
                     "title" => "Loan Payment Reminder",
                     "subtitle" => "Click the the button below to navigate to the loan page.",
                     "buttonText" => "View Loan",
-                    "buttonLink" => url("/loan"),
+                    "buttonLink" => url("http://127.0.0.1/ExpenseIncomeTracker/loan/"),
                     "message" => $message
                 ),
                 "withbutton"
