@@ -1,0 +1,94 @@
+<div class="modal-content">
+    <div class="modal-header">
+       <h4 class="modal-title">{{__('loans.loans-form.update-title')}}</h4>
+    </div>
+       <form class="simcy-form" action="{{ url('Loans@update') }}" data-parsley-validate="" method="POST" loader="true">
+    <div class="modal-body">
+          <div class="form-group">
+             <div class="row">
+                <div class="col-md-12">
+                   <label>{{__('loans.loans-form.label.title')}}</label>
+                   <input type="text" class="form-control" name="title" value="{{$loans->title}}" placeholder="{{__('loans.loans-form.placeholder.title')}}">
+                   <input type="hidden" name="csrf-token" value="{{csrf_token()}}" />
+                   <input type="hidden" name="loanid" value="{{$loans->id}}" />
+                   <input type="hidden" name="type" value="0" />
+                </div>
+             </div>
+          </div>
+          <div class="form-group">
+             <div class="row">
+                <div class="col-md-12">
+                   <label>{{__('loans.loans-form.label.amount')}}</label>
+                   <span class="input-prefix">{{ currency() }}</span>
+                   <input type="number" class="form-control prefix" value="{{$loans->amount}}" name="amount" placeholder="{{__('loans.loans-form.placeholder.amount')}}">
+                </div>
+             </div>
+          </div>
+          <div class="form-group">
+             <div class="row">
+                <div class="col-md-12">
+                   <label>{{__('loans.loans-form.label.account')}}</label>
+                   <select class="form-control select2" name="account">
+                      <option value="0" @if($loans->account == '0') selected @endif>
+                         {{__('loans.loans-form.account.other')}}</option>
+                     @if(!empty($accounts))
+                     @foreach($accounts as $account)
+                      <option value="{{ $account->id }}" @if( $loans->account == $account->id ) selected @endif>{{ $account->name }}</option>
+                     @endforeach
+                     @endif
+                   </select>
+                </div>
+             </div>
+          </div>
+          <div class="form-group">
+            <div class="row">
+                <div class="col-md-12">
+                    <label>{{__('loans.loans-form.terms')}} ({{__('loans.loans-form.prefix')}})</label>
+                    <input type="number" class="form-control"  name="payment_terms" min="1" value="{{$loans->payment_terms}}" placeholder="{{__('loans.loans-form.placeholder.terms')}}" required="">
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-12">
+                    <label>{{__('loans.loans-form.label.start')}}</label>
+                    <input type="text" class="form-control datepicker" name="start_date" value="{{date('m/d/Y', strtotime($loans->start_date))}}" placeholder="{{__('loans.loans-form.placeholder.start')}}" required="">
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-12">
+                    <label>{{__('loans.loans-form.label.end')}}</label>
+                    <input type="text" class="form-control datepicker" name="end_date" value="{{date('m/d/Y', strtotime($loans->end_date))}}" placeholder="{{__('loans.loans-form.placeholder.end')}}" required="">
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-12">
+                    <label>{{__('loans.loans-form.label.deadline')}} ({{__('loans.loans-form.day')}})</label>
+                    <input type="number" class="form-control"  name="deadline" min="1" value="{{$loans->deadline}}" placeholder="{{__('loans.loans-form.placeholder.day')}}" required="">
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-12">
+                    <label>{{__('loans.loans-form.label.reminder-day')}}</label>
+                    <input type="number" class="form-control"  name="reminder_day" min="1" value="{{$loans->reminder_day}}" placeholder="{{__('loans.loans-form.placeholder.day')}}" required="">
+                </div>
+            </div>
+        </div>
+    </div>
+       <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">{{__('loans.button.close')}}</button>
+          <button type="submit" class="btn btn-primary">{{__('loans.button.update-loan')}}</button>
+       </div>
+    </form>
+ </div>
+ <script type="text/javascript">
+    $('.datepicker-dynamic').datepicker({
+           autoclose: true
+   });
+ </script>

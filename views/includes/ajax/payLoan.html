@@ -1,0 +1,69 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h4 class="modal-title">{{ sprintf(__('loans.info-box.pay-loan'), ( $loans->title )) }}</h4>
+    </div>
+    <form class="simcy-form" action="{{ url('Loans@update') }}" data-parsley-validate="" method="POST" loader="true">
+        <div class="modal-body">
+            <div class="form-group">
+                <input type="hidden" name="csrf-token" value="{{csrf_token()}}" />
+                <input type="hidden" name="loanid" value="{{$loans->id}}" />
+                <input type="hidden" name="type" value="1" />
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-12">
+                        <label>{{__('loans.loans-form.label.amount-to-pay')}}</label>
+                        <span class="input-prefix">{{ currency() }}</span>
+                        <input type="number" class="form-control prefix" value="{{$loans->amount}}" readonly>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-12">
+                        <label>{{__('loans.loans-form.label.total-amt')}}</label>
+                        <span class="input-prefix">{{ currency() }}</span>
+                        <input type="number" class="form-control prefix" value="{{$loans->amount_remaining}}" readonly>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-12">
+                        <label>{{__('loans.loans-form.label.choose-payment')}}</label>
+                        <select class="form-control select2" name="choose_payment">
+                            <option value="0">{{__('loans.loans-form.label.partial-amt')}}</option>
+                            <option value="1">{{__('loans.loans-form.label.full-amt')}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group paymentAmount">
+                <div class="row">
+                    <div class="col-md-12">
+                        <label>{{__('loans.loans-form.label.amount')}}</label>
+                        <span class="input-prefix">{{ currency() }}</span>
+                        <input type="number" class="form-control prefix" min="{{$loans->amount}}" name="amount" required="">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-12">
+                        <label>{{__('loans.loans-form.label.date')}}</label>
+                        <input type="text" class="form-control datepicker-dynamic" name="date" placeholder="{{__('loans.loans-form.placeholder.date')}}" required="">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">{{__('loans.button.close')}}</button>
+            <button type="submit" class="btn btn-primary">{{__('loans.button.update-loan')}}</button>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    $('.datepicker-dynamic').datepicker({
+        autoclose: true
+    });
+</script>

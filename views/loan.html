@@ -1,0 +1,186 @@
+@include('includes/header')
+<body>
+@include('includes/navbar')
+<!-- Main content -->
+<div class="container">
+    <div class="page-heading">
+            <button class="btn btn-primary pull-right ml-5" type="button" data-toggle="modal" data-target="#addLoan"><span><i class="mdi mdi-plus-circle-outline"></i></span> {{__('loans.button.add-loan')}} </button>
+        <div class="heading-content">
+            <div class="user-image">
+                @if(empty($user->avatar))
+                <img src="{{ asset('assets/images/avatar.png') }}" class="img-circle img-responsive">
+                @else
+                <img src="{{ asset('uploads/avatar/'.$user->avatar) }}" class="img-circle img-responsive">
+                @endif
+            </div>
+            <div class="heading-title">
+                <h2>{{__('loans.heading.welcome')}}, {{$user->fname}} {{$user->lname}}</h2>
+                <p>{{__('loans.heading.intro')}}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+              <div class="card-header">
+                <h4>{{__('loans.loans-table.loans-records')}}</h4>
+              </div>
+              <div class="card-body">
+                  <div class="table-responsive longer">
+                      <table class="table display" id="datatable">
+                          <thead>
+                              <tr>
+                                  <th width="20%">{{__('loans.loans-table.name')}}</th>
+                                  <th>{{__('loans.loans-table.start')}}</th>
+                                  <th>{{__('loans.loans-table.end')}}</th>
+                                  <th>{{__('loans.loans-table.amount')}}</th>
+                                  <th>{{__('loans.loans-table.amount-remaining')}}</th>
+                                  <th>{{__('loans.loans-table.paid-status')}}</th>
+                                  <th></th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                          @if(!empty($loans))
+                            @foreach($loans as $Loan)                             
+                              <tr>
+                                  <td><strong>{{$Loan->title}}</strong><br>
+                                    <p class="text-primary">{{$Loan->accountname}}</p>
+                                  </td>
+                                  <td><span>{{date('M d, Y', strtotime($Loan->start_date))}}</span></td>
+                                  <td><span>{{date('M d, Y', strtotime($Loan->end_date))}}</span></td>
+                                  <td><strong>{{ money($Loan->amount)}}</strong></td>
+                                  <td><strong>{{ money($Loan->amount_remaining)}}</strong></td>
+                                  <td>
+                                    @if($Loan->paid == '0')
+                                    <span class="label label-danger text-white">{{__('loans.loans-table.not-paid')}}</span>
+                                    @elseif($Loan->paid == '1')
+                                    <span class="label label-info text-white">{{__('loans.loans-table.partially-paid')}}</span>
+                                    @elseif($Loan->paid == '2')
+                                    <span class="label label-success text-white">{{__('loans.loans-table.fully-paid')}}</span>
+                                    @endif
+                                  </td>
+                                  <td>
+                                      <div class="dropdown">
+                                        <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">{{__('loans.loans-table.actions')}} <span class="caret"></span> </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="c-dropdown__item dropdown-item fetch-display-click" url="{{ url('Loans@payView') }}" data="csrf-token:{{csrf_token()}}|loanid:{{$Loan->id}}|type:{{0}}" holder=".update-form" modal="#update" href=""><i class="mdi mdi-pencil"></i> {{__('loans.loans-table.edit')}}</a></li>
+                                            <!-- add a pay loan option -->
+                                            <li><a class="c-dropdown__item dropdown-item fetch-display-click" url="{{ url('Loans@payView') }}" data="csrf-token:{{csrf_token()}}|loanid:{{$Loan->id}}|type:{{1}}" holder=".update-form" modal="#update" href=""><i class="mdi mdi-cash"></i> {{__('loans.loans-table.pay')}}</a></li>
+                                            <li><a class="send-to-server-click" data="csrf-token:{{csrf_token()}}|loanid:{{$Loan->id}}" url="{{ url('Loans@delete') }}" warning-title="{{__('loans.messages.are-you-sure')}}" warning-message="{{__('loans.messages.delete')}}" warning-button="{{__('loans.messages.continue')}}" loader="true"><i class="mdi mdi-delete"></i> {{__('loans.loans-table.delete')}}</a></li>
+                                        </ul>
+                                      </div>
+                                  </td>
+                              </tr>
+                              @endforeach
+                          @else
+                          <tr>
+                            <td colspan="7" class="text-center">{{__('loans.loans-table.empty')}}</td>
+                          </tr>
+                          @endif
+                          </tbody>
+                      </table>
+                  </div>
+              </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+              <div class="card-header">
+                <h4>{{__('loans.info-box.loan-progress')}}</h4>
+              </div>
+              <div class="card-body">
+                  <section class="text-center mt-15">
+                    <svg class="circle-chart" viewbox="0 0 33.83098862 33.83098862" width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+                      <circle class="circle-chart__background" stroke="#efefef" stroke-width="2" fill="none" cx="16.91549431" cy="16.91549431" r="15.91549431" />
+                      <circle class="circle-chart__circle" stroke="#F4BE4A" stroke-width="2" stroke-dasharray="{{ $stats['percentage'] }},100" stroke-linecap="round" fill="none" cx="16.91549431" cy="16.91549431" r="15.91549431" />
+                      <g class="circle-chart__info">
+                        <text class="circle-chart__percent" x="16.91549431" y="15.5" alignment-baseline="central" text-anchor="middle" font-size="8">{{ $stats['percentage']}}%</text>
+                      </g>
+                    </svg>
+                    <div class="chart-insights">
+                    <p><strong>{{ $stats['total_full_paid']}}</strong> {{__('loans.info-box.out-of')}} <strong>{{ $stats['loan_count']}}</strong> {{__('loans.info-box.paid')}}</p>
+                    </div>
+                  </section>
+                  <div></div>
+              </div>
+            </div>
+        </div>
+    </div>
+
+
+  <!-- footer -->
+  @include('includes/footer')
+</div>
+
+
+
+    <!-- view edit modal -->
+    <div class="modal fade" id="update" role="dialog">
+      <div class="modal-dialog modal-sm">
+        <div class="update-form"></div>
+      </div>
+    </div>
+    <!-- scripts -->
+    <!-- <script src="assets/js/jquery-3.2.1.min.js"></script> -->
+    <script src="{{ url('') }}lang/{{env('APP_LOCALE_DEFAULT')}}/simcify-lang.js"></script> <!-- js language translation -->
+    <script src="//code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="//cdn.datatables.net/buttons/1.4.2/js/buttons.flash.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
+    <script src="//cdn.datatables.net/buttons/1.4.2/js/buttons.html5.min.js"></script>
+    <script src="//cdn.datatables.net/buttons/1.4.2/js/buttons.print.min.js"></script>
+    <script src="{{asset('assets/libs/bootstrap/js/bootstrap.min.js')}}"></script>
+    <script src="{{asset('assets/js//jquery.slimscroll.min.js')}}"></script>
+    <script src="{{asset('assets/js/simcify.min.js')}}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
+    <script src="https://cdn.datatables.net/plug-ins/1.10.22/sorting/datetime-moment.js"></script>
+    <script src="https://cdn.datatables.net/plug-ins/1.10.22/sorting/currency.js"></script>
+    <!-- custom scripts -->
+    <script src="{{asset('assets/js/app.js')}}"></script>
+    <script src="{{ url('') }}lang/{{env('APP_LOCALE_DEFAULT')}}/lang.js"></script> <!-- js language translation -->
+    <script>
+        $(document).ready(function() {
+            $.fn.dataTable.moment("MMM DD, YYYY");
+            $('#datatable').DataTable({
+                dom: 'Bfrtip',
+                columnDefs: [
+                  { type: 'currency', targets: 2 }
+                ],
+                order: [[ 1, 'desc']],
+                buttons: [{
+                extend: 'copyHtml5',
+                exportOptions: {
+                    columns: [ 0, 1, 2 ],
+                    stripNewlines: false,
+                },
+            },
+            {
+                extend: 'excelHtml5',
+                exportOptions: {
+                    columns: [ 0, 1, 2 ],
+                },
+            },
+            {
+                extend: 'pdfHtml5',
+                exportOptions: {
+                    columns: [ 0, 1, 2 ],
+                    stripNewlines: false,
+                    },
+                    customize : function(doc) {
+                        doc.content[1].table.widths = [ '60%', '20%', '20%',];
+                    }
+            }
+                ],
+                language: {
+                    url: '{{ url('') }}lang/{{env('APP_LOCALE_DEFAULT')}}/table_lang.json'
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
