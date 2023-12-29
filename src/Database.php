@@ -61,13 +61,6 @@ class Database {
      * @var string
      */
     protected $tableName;
-
-    /**
-     * The month and year to query
-     * 
-     * @var string
-     */
-    protected $monthYear;
     
     /**
      * Create a new DB instance
@@ -80,7 +73,6 @@ class Database {
     public function __construct(PDO $pdo, $table_name) {
         $this->conn = $pdo;
         $this->tableName = "`{$table_name}`";
-        $this->monthYear = date("Y-m");
     }
     
     /**

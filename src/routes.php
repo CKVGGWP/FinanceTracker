@@ -91,6 +91,7 @@ Router::group(array(
          * No login Required for these pages
          **/
         Router::get('/signin', 'Auth@get');
+        Router::get('/signin/reminder', 'Auth@send_loan_reminder');
         Router::post('/signin/authenticate', 'Auth@signin');
         Router::post('/forgot', 'Auth@forgot');
         Router::post('/signup', 'Auth@signup');
@@ -98,7 +99,6 @@ Router::group(array(
         Router::get('/reset/{token}', 'Auth@resetpage', array(
             'as' => 'token'
         ));
-        
     });
     
     Router::get('/404', function() {
