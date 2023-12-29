@@ -178,7 +178,7 @@ class Auth {
                 "Loan Payment Reminder for " . $loan->title,
                 array(
                     "title" => "Loan Payment Reminder",
-                    "subtitle" => "Click the the button below to navigate to the loan page.",
+                    "subtitle" => "Click the button below to navigate to the loan page.",
                     "buttonText" => "View Loan",
                     "buttonLink" => url("http://127.0.0.1/ExpenseIncomeTracker/loan/"),
                     "message" => $message
