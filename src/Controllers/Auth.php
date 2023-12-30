@@ -147,12 +147,12 @@ class Auth {
             $reminder_day = $loan->reminder_day;
             $reminder_date = date("Y-m-" . $reminder_day);
             $deadline_date = date("Y-m-" . $deadline);
-            $dateArr = [];
+            // $dateArr = [];
 
-            array_push($dateArr, $reminder_date);
-            array_push($dateArr, $deadline_date);
+            // array_push($dateArr, $reminder_date);
+            // array_push($dateArr, $deadline_date);
 
-            if (!in_array($today, $dateArr)) continue;
+            // if (!in_array($today, $dateArr)) continue;
 
             if ($today == $reminder_date){
                 $message = "Your loan payment for " . $loan->title . " with amount " . $loan->amount . " is due on " . date("F j, Y", strtotime($deadline_date)) . ". Please make payment to avoid penalties.";
@@ -172,6 +172,8 @@ class Auth {
     
                 if (!empty($loanReminder)) continue;
             }
+
+            if ($type == 3) continue;
 
             $send = Mail::send(
                 $user->email,
