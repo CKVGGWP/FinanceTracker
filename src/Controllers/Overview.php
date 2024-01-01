@@ -55,7 +55,8 @@ class Overview{
           $stats['incomePercentage'] = 0;
           $stats['expensePercentage'] = 0;
         }
-        $reports = self::reports(date('Y-m-d', strtotime('today - 30 days')).' 23:59:59', date('Y-m-d').' 00:00:00');
+        // $reports = self::reports(date('Y-m-d', strtotime('today - 30 days')).' 23:59:59', date('Y-m-d').' 00:00:00');
+        $reports = self::reports(date('Y-m-01'), date('Y-m-t'));
 
         return view('overview',compact("user","accounts","categories","incomecategories","title","stats","reports"));
     }
