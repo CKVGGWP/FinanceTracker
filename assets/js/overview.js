@@ -131,8 +131,10 @@ function initMonthlyGraph(){
 
 $(function () {
 
-    var start = moment().subtract(29, 'days');
-    var end = moment();
+    // var start = moment().subtract(29, 'days');
+    // var end = moment();
+    var start = moment().startOf('month');
+    var end = moment().endOf('month');
 
     function cb(start, end) {
         var start_month = start.format('MMMM');
