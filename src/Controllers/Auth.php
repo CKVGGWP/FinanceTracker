@@ -147,6 +147,9 @@ class Auth {
             $reminder_day = $loan->reminder_day;
             $reminder_date = date("Y-m-" . $reminder_day);
             $deadline_date = date("Y-m-" . $deadline);
+
+            $reminder_date = date("Y-m-d", strtotime($reminder_date));
+            $deadline_date = date("Y-m-d", strtotime($deadline_date));
             // $dateArr = [];
 
             // array_push($dateArr, $reminder_date);
