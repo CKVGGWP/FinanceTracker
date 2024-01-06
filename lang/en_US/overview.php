@@ -36,6 +36,7 @@ return [
 
     'graph' => [
         'last-30-days' => 'Last 30 Days',
+        'this-month' => 'This Month',
         'activities' => 'activities',
         'total-income' => 'Total Income',
         'total-expenses' => 'Total Expenses',

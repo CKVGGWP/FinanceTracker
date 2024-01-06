@@ -64,9 +64,11 @@
                                       <div class="dropdown">
                                         <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">{{__('loans.loans-table.actions')}} <span class="caret"></span> </button>
                                         <ul class="dropdown-menu">
+                                            <li><a class="c-dropdown__item dropdown-item fetch-display-click" url="{{ url('Loans@view') }}" data="csrf-token:{{csrf_token()}}|loanid:{{$Loan->id}}" holder=".update-form" modal="#update" href=""><i class="mdi mdi-eye"></i> {{__('loans.loans-table.view')}}</a></li>
                                             <li><a class="c-dropdown__item dropdown-item fetch-display-click" url="{{ url('Loans@payView') }}" data="csrf-token:{{csrf_token()}}|loanid:{{$Loan->id}}|type:{{0}}" holder=".update-form" modal="#update" href=""><i class="mdi mdi-pencil"></i> {{__('loans.loans-table.edit')}}</a></li>
-                                            <!-- add a pay loan option -->
+                                            @if($Loan->paid != '2')
                                             <li><a class="c-dropdown__item dropdown-item fetch-display-click" url="{{ url('Loans@payView') }}" data="csrf-token:{{csrf_token()}}|loanid:{{$Loan->id}}|type:{{1}}" holder=".update-form" modal="#update" href=""><i class="mdi mdi-cash"></i> {{__('loans.loans-table.pay')}}</a></li>
+                                            @endif
                                             <li><a class="send-to-server-click" data="csrf-token:{{csrf_token()}}|loanid:{{$Loan->id}}" url="{{ url('Loans@delete') }}" warning-title="{{__('loans.messages.are-you-sure')}}" warning-message="{{__('loans.messages.delete')}}" warning-button="{{__('loans.messages.continue')}}" loader="true"><i class="mdi mdi-delete"></i> {{__('loans.loans-table.delete')}}</a></li>
                                         </ul>
                                       </div>

@@ -1,6 +1,6 @@
 <div class="modal-content">
     <div class="modal-header">
-        <h4 class="modal-title">{{ sprintf(__('bills.info-box.view'), ( $bills->title )) }}</h4>
+        <h4 class="modal-title">{{ sprintf(__('loans.info-box.view'), ( $loans->title )) }}</h4>
     </div>
     <div class="modal-body">
         <div class="card">
@@ -9,24 +9,24 @@
                     <table class="table display" id="datatable">
                         <thead>
                             <tr>
-                                <th>{{__('bills.bills-table.date-paid')}}</th>
-                                <th>{{__('bills.bills-table.amount')}}</th>
+                                <th>{{__('loans.loans-table.date-paid')}}</th>
+                                <th>{{__('loans.loans-table.amount')}}</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @if(!empty($bill_payments))
-                            @foreach($bill_payments as $bill_payment)
+                            @if(!empty($loanPayment))
+                            @foreach($loanPayment as $loanPayments)
                             <tr>
-                                <td>{{ date('F j, Y', strtotime($bill_payment->date_paid)) }}</td>
-                                <td>{{ money($bill_payment->amount) }}</td>
+                                <td>{{ date('F j, Y', strtotime($loanPayments->expense_date)) }}</td>
+                                <td>{{ money($loanPayments->amount) }}</td>
                             </tr>
                             @endforeach
                             <tr>
-                                <td><strong>{{__('bills.bills-table.total')}}</strong></td>
+                                <td><strong>{{__('loans.loans-table.total')}}</strong></td>
                                 <td><strong>{{ money($total_paid) }}</strong></td>
                                 @else
                             <tr>
-                                <td colspan="2">{{__('bills.bills-table.no-history')}}</td>
+                                <td colspan="2">{{__('loans.loans-table.no-history')}}</td>
                             </tr>
                             @endif
                     </table>
@@ -35,6 +35,6 @@
         </div>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">{{__('bills.button.close')}}</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">{{__('loans.button.close')}}</button>
     </div>
 </div>

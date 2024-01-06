@@ -23,6 +23,7 @@ return [
         'good-progress' => 'Good progress',
         'a-bit-dry' => 'Almost there',
         'pay-loan' => 'Pay for %s',
+        'view' => 'View Payment History for %s',
     ],
 
     'links' => [
@@ -36,6 +37,9 @@ return [
     ],
 
     'loans-table' => [
+        'view' => 'View Payment History',
+        'no-history' => 'No Bill History Yet',
+        'date-paid' => 'Date Paid',
         'loan-records' => 'Loan records',
         'name' => 'Name',
         'date' => 'Date',
@@ -57,6 +61,7 @@ return [
         'partially-paid' => 'Partially Paid',
         'fully-paid' => 'Fully Paid',
         'pay' => 'Pay Loan',
+        'total' => 'Total',
     ],
 
     'loans-form' => [

@@ -95,6 +95,20 @@ class Loans{
     }
 
     /**
+     * View Payment History
+     * 
+     * @return \Pecee\Http\Response
+     */
+    public function view() {
+        $user = Auth::user();
+        $loans = Database::table('loans')->where('id', input("loanid"))->first();
+        $loanPayment = Database::table('expenses')->where('title', $loans->title)->where('user', $loans->user)->orderBy("id", false)->get();
+        $total_paid = Database::table('expenses')->where('title', $loans->title)->where('user', $loans->user)->sum('amount','total')[0]->total;
+
+        return view('includes/ajax/viewLoanHistory', compact("loans","loanPayment","total_paid"));
+    }
+
+    /**
      * Update Loan modal
      * 
      * @return \Pecee\Http\Response
