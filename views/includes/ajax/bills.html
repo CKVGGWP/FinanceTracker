@@ -1,0 +1,112 @@
+<div class="modal-content">
+    <div class="modal-header">
+       <h4 class="modal-title">{{__('bills.bills-form.update-title')}}</h4>
+    </div>
+       <form class="simcy-form" action="{{ url('Bills@update') }}" data-parsley-validate="" method="POST" loader="true">
+    <div class="modal-body">
+          <div class="form-group">
+             <div class="row">
+                <div class="col-md-12">
+                   <label>{{__('bills.bills-form.label.title')}}</label>
+                   <input type="text" class="form-control" name="title" value="{{$bills->title}}" placeholder="{{__('bills.bills-form.placeholder.title')}}">
+                   <input type="hidden" name="csrf-token" value="{{csrf_token()}}" />
+                   <input type="hidden" name="billid" value="{{$bills->id}}" />
+                   <input type="hidden" name="type" value="0" />
+                </div>
+             </div>
+          </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-12">
+                    <label>{{__('bills.bills-form.label.amount')}}</label>
+                    <span class="input-prefix">{{ currency() }}</span>
+                    <input type="number" class="form-control prefix" value="{{$bills->amount}}"  step="0.01" data-parsley-pattern="^[0-9]*\.[0-9]{2}$" name="amount" min="0.01" placeholder="{{__('loans.loans-form.placeholder.amount')}}" required="">
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+               <div class="col-md-12">
+                  <label>{{__('bills.bills-form.label.account')}}</label>
+                  <select class="form-control select2" name="account">
+                     <option value="0" @if($bills->account == '0') selected @endif>
+                        {{__('bills.bills-form.account.other')}}</option>
+                    @if(!empty($accounts))
+                    @foreach($accounts as $account)
+                     <option value="{{ $account->id }}" @if( $bills->account == $account->id ) selected @endif>{{ $account->name }}</option>
+                    @endforeach
+                    @endif
+                  </select>
+               </div>
+            </div>
+         </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-12">
+                    <label>{{__('bills.bills-form.label.category')}}</label>
+                    <select class="form-control select2" name="category">
+                        <option value="0" @if($bills->category == '0') selected @endif>
+                            {{__('bills.bills-form.category.other')}}</option>
+                        @if(!empty($categories))
+                        @foreach($categories as $category)
+                         <option value="{{ $category->id }}" @if( $bills->category == $category->id ) selected @endif>{{ $category->name }}</option>
+                        @endforeach
+                        @endif
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-12">
+                    <label>{{__('bills.bills-form.label.deadline')}} ({{__('bills.bills-form.day')}})</label>
+                    <input type="number" class="form-control" value="{{$bills->deadline}}"  name="deadline" min="1" placeholder="{{__('bills.bills-form.placeholder.day')}}" required="">
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-12">
+                    <label>{{__('bills.bills-form.label.reminder-day')}}</label>
+                    <input type="number" class="form-control" value="{{$bills->reminder_day}}"  name="reminder_day" min="1" placeholder="{{__('bills.bills-form.placeholder.day')}}" required="">
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-12">
+                    <label>{{__('bills.bills-form.label.payment-type')}}</label>
+                    <select class="form-control select2" name="payment_type">
+                        <option value="0" @if($bills->type == '1') selected @endif>
+                            {{__('bills.bills-form.type.monthly')}}</option>
+                        <option value="1" @if($bills->type == '2') selected @endif>
+                            {{__('bills.bills-form.type.yearly')}}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-12">
+                    <label>{{__('bills.bills-form.label.bill-status')}}</label>
+                    <select class="form-control select2" name="bill_status">
+                        <option value="0" @if($bills->status == '0') selected @endif>
+                            {{__('bills.bills-table.inactive')}}</option>
+                        <option value="1" @if($bills->status == '1') selected @endif>
+                            {{__('bills.bills-table.active')}}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+       <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">{{__('bills.button.close')}}</button>
+          <button type="submit" class="btn btn-primary">{{__('bills.button.update-bill')}}</button>
+       </div>
+    </form>
+ </div>
+ <script type="text/javascript">
+    $('.datepicker-dynamic').datepicker({
+           autoclose: true
+   });
+ </script>

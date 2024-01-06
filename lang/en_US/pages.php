@@ -10,6 +10,7 @@ return [
         'reset-password' => 'Reset Password',
         'login' => 'Login',
         'loans' => 'Loans',
+        'bills' => 'Bills',
     ],
 
     'options' => [
@@ -18,6 +19,7 @@ return [
         'expense' => 'Expense',
         'income' => 'Income',
         'loans' => 'Loan',
+        'bills' => 'Bills',
     ],
 
     'profile-menu' => [

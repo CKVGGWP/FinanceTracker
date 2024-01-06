@@ -86,7 +86,7 @@ header {
 header nav.navigation {
     overflow: hidden;
     display: inline-block;
-    margin-left: 40px;
+    margin-left: 5px;
 }
 header nav.navigation .nav > li > a {
     position: relative;

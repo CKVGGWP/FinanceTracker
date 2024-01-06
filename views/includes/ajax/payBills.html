@@ -1,0 +1,54 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h4 class="modal-title">{{ sprintf(__('bills.info-box.pay-bill'), ( $bills->title )) }}</h4>
+    </div>
+    <form class="simcy-form" action="{{ url('Bills@update') }}" data-parsley-validate="" method="POST" loader="true">
+        <div class="modal-body">
+            <input type="hidden" name="csrf-token" value="{{csrf_token()}}" />
+            <input type="hidden" name="billid" value="{{$bills->id}}" />
+            <input type="hidden" name="type" value="1" />
+            <div class="card">
+                <div class="card-header">
+                    <h4>{{__('bills.bills-table.bill-history')}}</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive longer">
+                        <table class="table display" id="datatable">
+                            <thead>
+                                <tr>
+                                    <th>{{__('bills.bills-table.date-paid')}}</th>
+                                    <th>{{__('bills.bills-table.amount')}}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if(!empty($bill_payments))
+                                @foreach($bill_payments as $bill_payment)
+                                <tr>
+                                    <td>{{ date('F j, Y', strtotime($bill_payment->date_paid)) }}</td>
+                                    <td>{{ money($bill_payment->amount) }}</td>
+                                </tr>
+                                @endforeach
+                                <tr>
+                                    <td><strong>{{__('bills.bills-table.total')}}</strong></td>
+                                    <td><strong>{{ money($total_paid) }}</strong></td>
+                                @else
+                                <tr>
+                                    <td colspan="2">{{__('bills.bills-table.no-history')}}</td>
+                                </tr>
+                                @endif
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">{{__('bills.button.close')}}</button>
+            <button type="submit" class="btn btn-primary">{{__('bills.button.pay-bill')}}</button>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    $('.datepicker-dynamic').datepicker({
+        autoclose: true
+    });
+</script>

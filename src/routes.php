@@ -54,6 +54,14 @@ Router::group(array(
         Router::post('/loan/update', 'Loans@update');
         Router::post('/loan/update/view', 'Loans@payView');
         Router::post('/loan/delete', 'Loans@delete');
+
+        // Bills
+        Router::get('/bills', 'Bills@get');
+        Router::post('/bill/add', 'Bills@add');
+        Router::post('/bill/view', 'Bills@view');
+        Router::post('/bill/update', 'Bills@update');
+        Router::post('/bill/update/view', 'Bills@payView');
+        Router::post('/bill/delete', 'Bills@delete');
         
         // Settings
         Router::get('settings', 'Settings@get');
