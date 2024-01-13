@@ -58,7 +58,45 @@ class Overview{
         // $reports = self::reports(date('Y-m-d', strtotime('today - 30 days')).' 23:59:59', date('Y-m-d').' 00:00:00');
         $reports = self::reports(date('Y-m-01'), date('Y-m-t'));
 
-        return view('overview',compact("user","accounts","categories","incomecategories","title","stats","reports"));
+        $allIncome = Database::table('income')->where('user', $user->id)->get();
+        $allExpenses = Database::table('expenses')->where('user', $user->id)->get();
+
+        $financeArr = array();
+
+        foreach ($allIncome as $income) {
+            $month = date('F', strtotime($income->income_date));
+            $year = date('Y', strtotime($income->income_date));
+            $financeArr[$year][$month]['income'] += $income->amount;
+        }
+
+        foreach ($allExpenses as $expense) {
+            $month = date('F', strtotime($expense->expense_date));
+            $year = date('Y', strtotime($expense->expense_date));
+            $financeArr[$year][$month]['expenses'] += $expense->amount;
+        }
+
+        foreach ($financeArr as $year => $months) {
+            foreach ($months as $month => $values) {
+                $financeArr[$year][$month]['savings'] = $financeArr[$year][$month]['income'] - $financeArr[$year][$month]['expenses'];
+            }
+        }
+
+        krsort($financeArr);
+        
+        $stats['totalIncome'] = 0;
+        $stats['totalExpenses'] = 0;
+        $stats['totalSavings'] = 0;
+
+        foreach ($financeArr as $year => $months) {
+            foreach ($months as $month => $values) {
+                $stats['totalIncome'] += $values['income'];
+                $stats['totalExpenses'] += $values['expenses'];
+            }
+        }
+
+        $stats['totalSavings'] = $stats['totalIncome'] - $stats['totalExpenses'];
+
+        return view('overview',compact("user","accounts","categories","incomecategories","title","stats","reports", "financeArr"));
     }
 
     /**

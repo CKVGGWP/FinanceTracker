@@ -214,6 +214,54 @@
 
         <div class="row">
             <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>{{__('overview.accounts-table.overview')}}</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive longer">
+                            <table class="table display" id="datatable">
+                                <thead>
+                                    <tr>
+                                        <th>{{__('overview.accounts-table.income')}}</th>
+                                        <th>{{__('overview.accounts-table.expenses')}}</th>
+                                        <th>{{__('overview.accounts-table.savings')}}</th>
+                                        <th>{{__('overview.accounts-table.date')}}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if(!empty($financeArr))
+                                    @foreach($financeArr as $year => $months)
+                                        @foreach($months as $month => $data)
+                                            <tr>
+                                                <td>{{ money($data['income']) }}</td>
+                                                <td>{{ money($data['expenses']) }}</td>
+                                                <td>{{ money($data['savings']) }}</td>
+                                                <td>{{ $month }} {{ $year }}</td>
+                                            </tr>
+                                        @endforeach
+                                    @endforeach
+                                    <tr>
+                                        <td><strong>{{ money($stats['totalIncome']) }}</strong></td>
+                                        <td><strong>{{ money($stats['totalExpenses']) }}</strong></td>
+                                        <td><strong>{{ money($stats['totalSavings']) }}</strong></td>
+                                        <td><strong>{{__('overview.accounts-table.total')}}</strong></td>
+                                    </tr>
+                                    @else
+                                    <tr>
+                                        <td colspan="4" class="text-center">{{__('overview.graph.empty')}}</td>
+                                    </tr>
+                                    @endif
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
 
                 <div class="card">
                     <div class="card-header">

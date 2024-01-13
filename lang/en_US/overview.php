@@ -50,6 +50,7 @@ return [
     'accounts-table' => [
         'accounts' => 'Accounts',
         'balance' => 'Balance',
+        'overview' => 'Financial Overview',
         'transactions' => 'Transactions',
         'updated-on' => 'Updated On',
         'active' => 'Active',
@@ -57,6 +58,14 @@ return [
         'actions' => 'Actions',
         'edit' => 'Edit',
         'delete' => 'Delete',
+        'income' => 'Income',
+        'expenses' => 'Expenses',
+        'savings' => 'Savings',
+        'date' => 'Date',
+        'total-income' => 'Total Income',
+        'total-expenses' => 'Total Expenses',
+        'total-savings' => 'Total Savings',
+        'total' => 'Total',
     ],
 
     'accounts-form' => [
