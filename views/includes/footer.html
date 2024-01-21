@@ -369,76 +369,22 @@
     </div>
 
     <script>
-        document.addEventListener("input", function(event){
+        document.addEventListener("keydown", function(event){
             if(event.target.classList.contains("amountPref")){
                 var input = event.target.value;
-                var numArr = [1,2,3,4,5,6,7,8,9,0];
     
-                // if (input.charAt(0) == "*" || input.charAt(0) == "/" || input.charAt(0) == "+" || input.charAt(0) == "-") {
-                //     event.target.value = '';
-                //     return false;
-                // }
-
-                if (numArr.indexOf(parseInt(input.charAt(0))) == -1 || input.charAt(0) == ".") {
-                    event.target.value = '';
-                    return false;
-                }
+                if (event.key === "=") {
+                    event.preventDefault(); // Prevent the "=" key from being typed
     
-                var addition = input.split("+");
-                if (addition.length == 2) {
-                    var num1 = parseFloat(addition[0]);
-                    var num2 = parseFloat(addition[1]);
-                    if (!isNaN(num1) && !isNaN(num2)) {
-                        var result = num1 + num2;
-                        result = result.toFixed(2);
-                        event.target.value = result;
+                    try {
+                        var result = eval(input);
+                        if (!isNaN(result)) {
+                            event.target.value = result.toFixed(2);
+                        }
+                    } catch (error) {
+                        console.error("Invalid expression: " + input);
                     }
                 }
-    
-                var subtraction = input.split("-");
-                if (subtraction.length == 2) {
-                    var num1 = parseFloat(subtraction[0]);
-                    var num2 = parseFloat(subtraction[1]);
-                    if (!isNaN(num1) && !isNaN(num2)) {
-                        var result = num1 - num2;
-                        result = result.toFixed(2);
-                        event.target.value = result;
-                    }
-                }
-    
-                var multiplication = input.split("*");
-                if (multiplication.length == 2) {
-                    var num1 = parseFloat(multiplication[0]);
-                    var num2 = parseFloat(multiplication[1]);
-                    if (!isNaN(num1) && !isNaN(num2)) {
-                        var result = num1 * num2;
-                        result = result.toFixed(2);
-                        event.target.value = result;
-                    }
-                }
-    
-                var division = input.split("/");
-                if (division.length == 2) {
-                    var num1 = parseFloat(division[0]);
-                    var num2 = parseFloat(division[1]);
-                    if (!isNaN(num1) && !isNaN(num2)) {
-                        var result = num1 / num2;
-                        result = result.toFixed(2);
-                        event.target.value = result;
-                    }
-                }
-
-                event.target.addEventListener("blur", function(event){
-                    var input = event.target.value;
-                    var numArr = [1,2,3,4,5,6,7,8,9,0];
-                    if (numArr.indexOf(parseInt(input.charAt(0))) == -1 || input.charAt(0) == ".") {
-                        event.target.value = '';
-                        return false;
-                    }
-                    var result = parseFloat(input);
-                    result = result.toFixed(2);
-                    event.target.value = result;
-                });
             }
         });
     </script>
