@@ -26,6 +26,8 @@
               <nav class="navbar">
                 <ul class="nav navbar-nav">
                   <li class="active"><a data-toggle="tab" href="#profile"><span><i class="mdi mdi-account"></i></span>  {{__('settings.side-menu.profile')}}</a></li>
+                  <!-- add a data tab -->
+                  <li><a data-toggle="tab" href="#data"><span><i class="mdi mdi-import"></i></span>  {{__('settings.side-menu.data')}}</a></li>
                   <li><a data-toggle="tab" href="#categories"><span><i class="mdi mdi-theme-light-dark"></i></span>  {{__('settings.side-menu.categories')}}</a></li>
                   @if ( $user->role == "admin" ) 
                   <li><a data-toggle="tab" href="#system"><span><i class="mdi mdi-settings"></i></span>  {{__('settings.side-menu.system')}}</a></li>
@@ -135,6 +137,38 @@
                                                 </div>
                                             </div>
                                         </form>
+                                  </div>
+                                  <div id="data" class="tab-pane fade">
+                                    <h3>{{__('settings.statement-form.title')}}</h3>
+                                    <p class="text-muted text-thin">{{__('settings.statement-form.intro')}}</p>
+                                    
+                                    <form class="simcy-form" action="{{ url('Settings@downloadStatement')}}" data-parsley-validate="" loader="true" method="POST" enctype="multipart/form-data">
+                                        <input type="hidden" value="{{ csrf_token() }}" name="csrf-token">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>{{__('settings.statement-form.label.date')}}</label>
+                                                    <select class="form-control select2" name="statement-date">
+                                                        @if(!empty($dateArr))
+                                                        <option value="all">{{__('settings.statement-form.label.All')}}</option>
+                                                        @foreach($dateArr as $date)
+                                                        <option value="{{ $date }}">{{ date('F Y', strtotime($date)) }}</option>
+                                                        @endforeach
+                                                        @endif
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12 text-right">
+                                                    @if (!empty($dateArr))
+                                                    <button class="btn btn-primary" type="submit">{{__('settings.button.statement')}}</button>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
                                   </div>
                                   <div id="categories" class="tab-pane fade">
                                     <h3>{{__('settings.category-table.title')}}</h3>

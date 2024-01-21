@@ -32,7 +32,7 @@
                                 <div class="col-md-12">
                                     <label>{{__('income.income-form.label.amount')}}</label>
                                     <span class="input-prefix">{{ currency() }}</span>
-                                    <input type="number" class="form-control prefix"  step="0.01" data-parsley-pattern="^[0-9]*\.[0-9]{2}$" name="amount" min="0.01" placeholder="{{__('income.income-form.placeholder.amount')}}" required="">
+                                    <input type="text" class="form-control prefix amountPref"  step="0.01" data-parsley-pattern="^[0-9]*\.[0-9]{2}$" name="amount" min="0.01" placeholder="{{__('income.income-form.placeholder.amount')}}" required="">
                                 </div>
                             </div>
                         </div>
@@ -71,7 +71,7 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <label>{{__('income.income-form.label.date')}}</label>
-                                    <input type="text" class="form-control datepicker" name="income_date" placeholder="{{__('income.income-form.placeholder.date')}}" required="">
+                                    <input type="text" class="form-control datepicker" name="income_date" placeholder="{{__('income.income-form.placeholder.date')}}" value="{{date('m/d/Y')}}" required="">
                                 </div>
                             </div>
                         </div>
@@ -112,7 +112,7 @@
                                 <div class="col-md-12">
                                     <label>{{__('expenses.expense-form.label.amount')}}</label>
                                     <span class="input-prefix">{{ currency() }}</span>
-                                    <input type="number" class="form-control prefix"  step="0.01" data-parsley-pattern="^[0-9]*\.[0-9]{2}$" min="0.01" name="amount" placeholder="Amount" required="">
+                                    <input type="text" class="form-control prefix amountPref"  step="0.01" data-parsley-pattern="^[0-9]*\.[0-9]{2}$" min="0.01" name="amount" placeholder="Amount" required="">
                                 </div>
                             </div>
                         </div>
@@ -150,7 +150,7 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <label>{{__('expenses.expense-form.label.date')}}</label>
-                                    <input type="text" class="form-control datepicker" name="expense_date" placeholder="{{__('expenses.expense-form.placeholder.date')}}" required="">
+                                    <input type="text" class="form-control datepicker" name="expense_date" placeholder="{{__('expenses.expense-form.placeholder.date')}}" value="{{date('m/d/Y')}}" required="">
                                 </div>
                             </div>
                         </div>
@@ -191,7 +191,7 @@
                                 <div class="col-md-12">
                                     <label>{{__('loans.loans-form.label.amount')}}</label>
                                     <span class="input-prefix">{{ currency() }}</span>
-                                    <input type="number" class="form-control prefix"  step="0.01" data-parsley-pattern="^[0-9]*\.[0-9]{2}$" name="amount" min="0.01" placeholder="{{__('loans.loans-form.placeholder.amount')}}" required="">
+                                    <input type="text" class="form-control prefix amountPref"  step="0.01" data-parsley-pattern="^[0-9]*\.[0-9]{2}$" name="amount" min="0.01" placeholder="{{__('loans.loans-form.placeholder.amount')}}" required="">
                                 </div>
                             </div>
                         </div>
@@ -262,7 +262,7 @@
 
     <!-- add bill -->
     <div class="modal fade" id="addBill" role="dialog">
-        <div class="modal-dialog modal-sm">bills
+        <div class="modal-dialog modal-sm">
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
@@ -286,7 +286,7 @@
                                 <div class="col-md-12">
                                     <label>{{__('bills.bills-form.label.amount')}}</label>
                                     <span class="input-prefix">{{ currency() }}</span>
-                                    <input type="number" class="form-control prefix"  step="0.01" data-parsley-pattern="^[0-9]*\.[0-9]{2}$" name="amount" min="0.01" placeholder="{{__('loans.loans-form.placeholder.amount')}}" required="">
+                                    <input type="text" class="form-control prefix amountPref"  data-parsley-pattern="^[0-9]*\.[0-9]{2}$" name="amount" placeholder="{{__('loans.loans-form.placeholder.amount')}}" required="">
                                 </div>
                             </div>
                         </div>
@@ -367,3 +367,78 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener("input", function(event){
+            if(event.target.classList.contains("amountPref")){
+                var input = event.target.value;
+                var numArr = [1,2,3,4,5,6,7,8,9,0];
+    
+                // if (input.charAt(0) == "*" || input.charAt(0) == "/" || input.charAt(0) == "+" || input.charAt(0) == "-") {
+                //     event.target.value = '';
+                //     return false;
+                // }
+
+                if (numArr.indexOf(parseInt(input.charAt(0))) == -1 || input.charAt(0) == ".") {
+                    event.target.value = '';
+                    return false;
+                }
+    
+                var addition = input.split("+");
+                if (addition.length == 2) {
+                    var num1 = parseFloat(addition[0]);
+                    var num2 = parseFloat(addition[1]);
+                    if (!isNaN(num1) && !isNaN(num2)) {
+                        var result = num1 + num2;
+                        result = result.toFixed(2);
+                        event.target.value = result;
+                    }
+                }
+    
+                var subtraction = input.split("-");
+                if (subtraction.length == 2) {
+                    var num1 = parseFloat(subtraction[0]);
+                    var num2 = parseFloat(subtraction[1]);
+                    if (!isNaN(num1) && !isNaN(num2)) {
+                        var result = num1 - num2;
+                        result = result.toFixed(2);
+                        event.target.value = result;
+                    }
+                }
+    
+                var multiplication = input.split("*");
+                if (multiplication.length == 2) {
+                    var num1 = parseFloat(multiplication[0]);
+                    var num2 = parseFloat(multiplication[1]);
+                    if (!isNaN(num1) && !isNaN(num2)) {
+                        var result = num1 * num2;
+                        result = result.toFixed(2);
+                        event.target.value = result;
+                    }
+                }
+    
+                var division = input.split("/");
+                if (division.length == 2) {
+                    var num1 = parseFloat(division[0]);
+                    var num2 = parseFloat(division[1]);
+                    if (!isNaN(num1) && !isNaN(num2)) {
+                        var result = num1 / num2;
+                        result = result.toFixed(2);
+                        event.target.value = result;
+                    }
+                }
+
+                event.target.addEventListener("blur", function(event){
+                    var input = event.target.value;
+                    var numArr = [1,2,3,4,5,6,7,8,9,0];
+                    if (numArr.indexOf(parseInt(input.charAt(0))) == -1 || input.charAt(0) == ".") {
+                        event.target.value = '';
+                        return false;
+                    }
+                    var result = parseFloat(input);
+                    result = result.toFixed(2);
+                    event.target.value = result;
+                });
+            }
+        });
+    </script>

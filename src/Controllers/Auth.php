@@ -128,7 +128,6 @@ class Auth {
      */
     public function loan_reminder($user){
         $loans = Database::table('loans')->where('user', $user->id)->get();
-        $typeArr = ['0', '1', '2'];
 
         if (empty($loans)) return;
 
@@ -197,7 +196,7 @@ class Auth {
                     "title" => "Email sent!",
                     "message" => "Email with loan payment reminder successfully sent!"
                 );
-            }else{
+            } else {
                 $response = array(
                     "status" => "error",
                     "title" => "Failed to send",
@@ -211,6 +210,100 @@ class Auth {
                 "type" => $type,
                 "date" => date("Y-m-d")
             ));
+
+            return $response;
+        }
+    }
+
+    /**
+     * Send Bill reminder
+     * 
+     * @return Json
+     */
+    public function send_bill_reminder(){
+        $user = Database::table('users')->where('status', 'Active')->get();
+        $responseArr = [];
+
+        foreach ($user as $user){
+            $billReminder = self::bill_reminder($user);
+
+            if (!empty($billReminder)){
+                array_push($responseArr, $billReminder);
+            }
+        }
+
+        return $responseArr;
+    }
+
+    public function bill_reminder($user){
+        $bills = Database::table('bills')->where('user', $user->id)->where('status', 1)->get();
+
+        if (empty($bills)) return;
+
+        foreach ($bills as $bill){
+            $message = "";
+            $billId = $bill->id;
+            $billTitle = $bill->title;
+            $billType = $bill->type; // Monthly, Yearly
+            $reminder_day = $bill->reminder_day;
+            $deadline = $bill->deadline;
+            $next_payment = $bill->next_payment;
+            
+            $today = date("Y-m-d");
+            $reminder_date = date("Y-m-" . $reminder_day);
+            $deadline_date = date("Y-m-" . $deadline);
+
+            $reminder_date = date("Y-m-d", strtotime($reminder_date));
+            $deadline_date = date("Y-m-d", strtotime($deadline_date));
+
+            $bill_payment = ($billType == 1) ? Database::table('bill_payment')->where('bill_id', $billId)->where('user', $user->id)->where('MONTH(date_paid)', date('m'))->where('YEAR(date_paid)', date('Y'))->where('bill_type', $billType)->first()
+                                            : Database::table('bill_payment')->where('bill_id', $billId)->where('user', $user->id)->where('YEAR(date_paid)', date('Y'))->where('bill_type', $billType)->first();
+            
+            if (!empty($bill_payment)) continue;
+
+            if ($billType == 2){
+                $billMonth = date("m", strtotime($next_payment));
+                $billYear = date("Y", strtotime($next_payment));
+
+                if ($billMonth != date('m') && $billYear != date('Y')) continue;
+            }
+
+            if ($today == $reminder_date){
+                $message = "Your bill payment for " . $billTitle . " is due on " . date("F j, Y", strtotime($deadline_date)) . ". Please make payment to avoid penalties.";
+
+            } else if ($today == $deadline_date){
+                $message = "Your bill payment for " . $billTitle . " is due today. Please make payment to avoid penalties.";
+
+            } else if ($today > $deadline_date){
+                $message = "Your bill payment for " . $billTitle . " was due on " . date("F j, Y", strtotime($deadline_date)) . ". Please make payment to avoid penalties.";
+            }
+
+            $send = Mail::send(
+                $user->email,
+                "Bill Payment Reminder for " . $billTitle,
+                array(
+                    "title" => "Bill Payment Reminder",
+                    "subtitle" => "Click the button below to navigate to the bill page.",
+                    "buttonText" => "View Bill",
+                    "buttonLink" => url("http://127.0.0.1/ExpenseIncomeTracker/bills/"),
+                    "message" => $message
+                ),
+                "withbutton"
+            );
+
+            if ($send) {
+                $response = array(
+                    "status" => "success",
+                    "title" => "Email sent!",
+                    "message" => "Email with bill payment reminder successfully sent!"
+                );
+            } else {
+                $response = array(
+                    "status" => "error",
+                    "title" => "Failed to send",
+                    "message" => $send->ErrorInfo
+                );
+            }
 
             return $response;
         }

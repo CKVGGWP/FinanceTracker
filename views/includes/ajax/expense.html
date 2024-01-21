@@ -19,7 +19,7 @@
                <div class="col-md-12">
                   <label>{{__('expenses.expense-form.label.amount')}}</label>
                   <span class="input-prefix">{{ currency() }}</span>
-                  <input type="number" class="form-control prefix" value="{{$expense->amount}}" name="amount" placeholder="{{__('expenses.expense-form.placeholder.amount')}}">
+                  <input type="text" class="form-control prefix amountPref" value="{{$expense->amount}}" name="amount" placeholder="{{__('expenses.expense-form.placeholder.amount')}}">
                </div>
             </div>
          </div>

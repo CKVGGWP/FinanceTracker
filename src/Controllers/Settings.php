@@ -5,6 +5,7 @@ use Simcify\File;
 use Simcify\Auth;
 use Simcify\Database;
 use DotEnvWriter\DotEnvWriter;
+use Simcify\Mail;
 
 class Settings {
     
@@ -20,7 +21,23 @@ class Settings {
         $currencies = Database::table("currencies")->get();
         $accounts = Database::table('accounts')->where('user', $user->id)->orderBy("id", false)->get();
         $categories = Database::table('categories')->where('user',$user->id)->orderBy("name", true)->get();
-        return view('settings', compact("user", "title", "timezones", "currencies","accounts","categories"));
+        $income = Database::table('income')->where('user', $user->id)->orderBy("id", false)->get();
+        $expense = Database::table('expenses')->where('user', $user->id)->orderBy("id", false)->get();
+
+        $dateArr = [];
+
+        foreach ($income as $key => $value) {
+            $date = explode('-', $value->income_date);
+            $dateArr[] = $date[0] . '-' . $date[1];
+        }
+
+        foreach ($expense as $key => $value) {
+            $date = explode('-', $value->expense_date);
+            $dateArr[] = $date[0] . '-' . $date[1];
+        }
+
+        $dateArr = array_unique($dateArr);
+        return view('settings', compact("user", "title", "timezones", "currencies","accounts","categories", "dateArr"));
     }
     
     /**
@@ -227,4 +244,137 @@ class Settings {
         return response()->json(responder("success", __('pages.messages.alright'), __('settings.messages.category-edit-success'), "reload()"));
     }
     
+    /**
+     * Download Statement
+     * 
+     * @return Json
+     */
+    public function downloadStatement(){
+        $date = input('statement-date');
+        $user = Auth::user();
+
+        if (empty($date)) {
+            return response()->json(responder("error", __('pages.messages.oops'), __('settings.messages.statement-date-empty')));
+        }
+
+        $dataArr = [];
+        $financeArr = [];
+        $user = Auth::user();
+
+        if ($date != "all"){
+            $month = explode('-', $date)[1];
+            $year = explode('-', $date)[0];
+        }
+
+        $incomeData = ($date == "all") ? Database::table('income')->where('user', $user->id)->orderBy("income_date", true)->get() : Database::table('income')->where('user', $user->id)->where('MONTH(income_date)', $month)->where('YEAR(income_date)', $year)->orderBy("income_date", true)->get();
+        $expenseData = ($date == "all") ? Database::table('expenses')->where('user', $user->id)->orderBy("expense_date", true)->get() : Database::table('expenses')->where('user', $user->id)->where('MONTH(expense_date)', $month)->where('YEAR(expense_date)', $year)->orderBy("expense_date", true)->get();
+
+        foreach ($incomeData as $key => $value) {
+            $dataArr[] = array(
+                'date' => $value->income_date,
+                'title' => $value->title,
+                'amount' => $value->amount,
+                'currencyAmount' => money($value->amount),
+                'type' => 'Income',
+            );
+        }
+
+        foreach ($expenseData as $key => $value) {
+            $dataArr[] = array(
+                'date' => $value->expense_date,
+                'title' => $value->title,
+                'amount' => $value->amount,
+                'currencyAmount' => money($value->amount),
+                'type' => 'Expense',
+            );
+        }
+
+        usort($dataArr, function($a, $b) {
+            return $a['date'] <=> $b['date'];
+        });
+
+        $total_income = $total_expense = 0;
+
+        foreach ($dataArr as $key => $value) {
+            if ($value['type'] == 'Income'){
+                $total_income += $value['amount'];
+            } else {
+                $total_expense += $value['amount'];
+            }
+        }
+
+        $total_savings = $total_income - $total_expense;
+
+        money($total_income);
+        money($total_expense);
+        money($total_savings);
+
+        $financeArr['total_income'] = $total_income;
+        $financeArr['total_expense'] = $total_expense;
+        $financeArr['total_savings'] = $total_savings;
+
+        $subtitle = ($date == "all") ? "From the beginning" : date('F Y', strtotime($date)) . " only";
+        $subject = "Statement of Account for " . (($date == "all") ? "All Time" : date('F Y', strtotime($date)));
+
+        // $view_data = array_merge(array(
+        //     "title" => "Statement of Account",
+        //     "subtitle" => "Period Covered: " . $subtitle,
+        //     "dataArr" => $dataArr,
+        //     "financeArr" => $financeArr,
+        // ), array(
+        //     "appurl" => env('APP_URL'),
+        //     "applogo" => env('APP_URL')."/uploads/app/".env('APP_LOGO'),
+        //     "copyright" => "&copy; ".date("Y")." ".env("APP_NAME")." | ".__('pages.footer')
+        // ));
+
+        // $body = view("emails.html.statement", $view_data);
+
+        // // convert the html body into a PDF file using our dompdf class
+        // $dompdf = new \Dompdf\Dompdf();
+        // $dompdf->loadHtml($body);
+        // $dompdf->setPaper('A4', 'portrait');
+        // $dompdf->render();
+        // $output = $dompdf->output();
+
+        // $filename = $user->id . "_Statement of Account for " . (($date == "all") ? "All Time" : date('F Y', strtotime($date)));
+
+        // if (!file_exists("uploads/statements/")) {
+        //     mkdir("uploads/statements/", 0777, true);
+        // }
+
+        // $file = fopen("uploads/statements/" . $filename . ".pdf", "w");
+        // fwrite($file, $output);
+        // fclose($file);
+
+        $send = Mail::send(
+            $user->email,
+            $subject,
+            array(
+                "title" => "Statement of Account",
+                "subtitle" => "Period Covered: " . $subtitle,
+                "dataArr" => $dataArr,
+                "financeArr" => $financeArr,
+            ),
+            "statement",
+            // array(
+            //     "uploads/statements/" . $filename . ".pdf" => "Statement of Account.pdf"
+            // )
+        );
+
+        if ($send){
+            $response = array(
+                "status" => "success",
+                "title" => "Email sent!",
+                "message" => "Statement sent to your email",
+            );
+        } else {
+            $response = array(
+                "status" => "error",
+                "title" => "Oops!",
+                "message" => $send->ErrorInfo
+            );
+        }
+
+        return response()->json($response);
+    }
 }

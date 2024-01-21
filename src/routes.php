@@ -67,6 +67,7 @@ Router::group(array(
         // Settings
         Router::get('settings', 'Settings@get');
         Router::post('/settings/update/profile', 'Settings@updateprofile');
+        Router::post('/settings/download/statement', 'Settings@downloadStatement');
         Router::post('/settings/update/company', 'Settings@updatecompany');
         Router::post('/settings/update/system', 'Settings@updatesystem');
         Router::post('/settings/update/reminders', 'Settings@updatereminders');
@@ -101,6 +102,7 @@ Router::group(array(
          **/
         Router::get('/signin', 'Auth@get');
         Router::get('/signin/reminder', 'Auth@send_loan_reminder');
+        Router::get('/signin/billreminder', 'Auth@send_bill_reminder');
         Router::post('/signin/authenticate', 'Auth@signin');
         Router::post('/forgot', 'Auth@forgot');
         Router::post('/signup', 'Auth@signup');

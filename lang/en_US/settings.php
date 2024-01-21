@@ -11,6 +11,7 @@ return [
 
     'side-menu' => [
         'profile' => 'Profile',
+        'data' => 'Data',
         'categories' => 'Categories',
         'system' => 'System',
         'security' => 'Security',
@@ -22,7 +23,8 @@ return [
         'close' => 'Close',
         'add-user' => 'Add User',
         'create-account' => 'Create Account',
-        'continue' => 'Continue'
+        'continue' => 'Continue',
+        'statement' => 'Download Statement',
     ],
 
     'profile-form' => [
@@ -44,6 +46,18 @@ return [
             'email' => 'Email Address',
             'phone' => 'Phone Number',
             'address' => 'Address',
+        ],
+    ],
+
+    'statement-form' => [
+        'title' => 'Statement',
+        'intro' => 'Download your account statement',
+        'label' => [
+            'Date' => 'Date',
+            'All' => 'All',
+        ],
+        'placeholder' => [
+            'Date' => 'Date',
         ],
     ],
 
@@ -157,6 +171,9 @@ return [
         'account-updated-success' => 'Account successfully updated.',
         'account-deleted' => 'Account Deleted!',
         'account-delete-success' => 'Account successfully deleted.',
+
+        'statement-date-empty' => 'No records found!',
+        'statement-send' => 'Statement sent to your email',
 
     ],
 

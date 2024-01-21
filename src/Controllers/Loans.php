@@ -14,6 +14,8 @@ class Loans{
         $stats = array();
         $title = __('pages.sections.loans');
         $user = Auth::user();
+        $categories = Database::table('categories')->where('user',$user->id)->where('type','expense')->orderBy("id", false)->get();
+        $incomecategories = Database::table('categories')->where('user',$user->id)->where('type','Income')->orderBy("id", false)->get();
         $accounts = Database::table('accounts')->where('user', $user->id)->orderBy("id", false)->get();
         $loans = Database::table("loans")->where("loans`.`user", $user->id)->leftJoin("accounts", "loans.account","accounts.id")->orderBy("loans.id", false)->get("`loans.id`", "`loans.title`", "`loans.amount`", "`loans.payment_terms`", "`loans.amount_remaining`", "`loans.start_date`", "`loans.end_date`", "`loans.deadline`", "`loans.paid`", "`loans.reminder_day`", "`loans.latest_paid_date`", "`accounts.name` as accountname");
         $loan = new \StdClass();
@@ -39,7 +41,7 @@ class Loans{
         $stats['loan_count'] = Database::table('loans')->where('user', $user->id)->count('id','total')[0]->total;
         $stats['percentage'] = $stats['loan_count'] > 0 ? round(($stats['total_full_paid'] / $stats['loan_count']) * 100) : 0;
 
-        return view('loan',compact("user","title","accounts","loans","stats"));
+        return view('loan',compact("user","title","accounts","loans","stats", "categories", "incomecategories"));
     }
 
     /**

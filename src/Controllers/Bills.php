@@ -16,39 +16,41 @@ class Bills {
         $user = Auth::user();
         $accounts = Database::table('accounts')->where('user', $user->id)->orderBy("id", false)->get();
         $categories = Database::table('categories')->where('user', $user->id)->orderBy("id", false)->get();
+        $incomecategories = Database::table('categories')->where('user',$user->id)->where('type','Income')->orderBy("id", false)->get();
         $bills = Database::table("bills")->where("bills`.`user", $user->id)->leftJoin("accounts", "bills.account","accounts.id")->leftJoin("categories", "bills.category","categories.id")->orderBy("bills.id", false)->get("`bills.next_payment`","`bills.type`","`bills.id`", "`bills.title`", "`bills.amount`", "`bills.deadline`", "`bills.reminder_day`", "`bills.date_added`", "`bills.date_updated`", "`bills.status`", "`accounts.name` as accountname", "`categories.name` as categoryname");
         $monthly_bill_payment_count = Database::table('bill_payment')->where('user', $user->id)->where('MONTH(date_paid)', date('m'))->where('YEAR(date_paid)', date('Y'))->where('bill_type', '1')->count('id','total')[0]->total;
-        $yearly_bill_payment_count = Database::table('bill_payment')->where('user', $user->id)->where('YEAR(date_paid)', date('Y') - 1)->where('bill_type', '2')->count('id','total')[0]->total;
+        // $yearly_bill_payment_count = Database::table('bill_payment')->where('user', $user->id)->where('YEAR(date_paid)', date('Y') - 1)->where('bill_type', '2')->count('id','total')[0]->total;
         $bill_count = Database::table('bills')->where('user', $user->id)->where('status', '1')->count('id','total')[0]->total;
         $bill = new \StdClass();
 
-        $bill_payment_count = $monthly_bill_payment_count + $yearly_bill_payment_count;
-
-        $lessPaymentCount = 0;
+        $yearly_bill_payment_count = 0;
 
         $billArr = [];
 
         foreach ($bills as $bill){
             $bill_status = 0;
-            
-            if ($bill->type == 2) { // Yearly
-                $bill_payment = Database::table('bill_payment')->where('bill_id', $bill->id)->where('YEAR(date_paid)', date('Y') - 1)->where('user', $user->id)->where('bill_type', '2')->first();
-                if (!empty($bill_payment)) {
-                    $bill_status = 1;
-                }
 
-                if ($bill->next_payment == date('Y-m-d') OR $bill->next_payment < date('Y-m-d')) {
-                    $bill_status = 0;
-                    $lessPaymentCount++;
-                }
-
-            } else { // Monthly
+            if ($bill->type == 1){
                 $bill_payment = Database::table('bill_payment')->where('bill_id', $bill->id)->where('MONTH(date_paid)', date('m'))->where('YEAR(date_paid)', date('Y'))->where('user', $user->id)->where('bill_type', '1')->first();
                 if (!empty($bill_payment)) {
                     $bill_status = 1;
                 }
+            } else {
+                $bill_payment = Database::table('bill_payment')->where('bill_id', $bill->id)->where('YEAR(date_paid)', date('Y') - 1)->where('user', $user->id)->where('bill_type', '2')->first();
+                if (!empty($bill_payment)) {
+                    $bill_status = 1;
+                    $yearly_bill_payment_count++;
+                } else {
+                    $bill_payment = Database::table('bill_payment')->where('bill_id', $bill->id)->where('YEAR(date_paid)', date('Y'))->where('user', $user->id)->where('bill_type', '2')->first();
+                    if (!empty($bill_payment)) {
+                        $bill_status = 1;
+                        $yearly_bill_payment_count++;
+                    }
+                }
+
             }
-            
+
+            $bill_payment_count = $monthly_bill_payment_count + $yearly_bill_payment_count;
 
             $billArr[] = array(
                 'id' => $bill->id,
@@ -69,7 +71,7 @@ class Bills {
         $stats['bill_count'] = $bill_count;
         $stats['percentage'] = $bill_count > 0 ? round(($bill_payment_count / $bill_count) * 100) : 0;
 
-        return view('bill',compact("user","title","accounts","categories", "bills", "billArr", "stats"));
+        return view('bill',compact("user","title","accounts","categories", "bills", "billArr", "stats", "incomecategories"));
     }
 
     /**
@@ -92,6 +94,7 @@ class Bills {
             'status'            =>  input('bill_status'),
             'type'              =>  input('payment_type'),
             'reminder_day'      =>  floor(input('reminder_day')),
+            'next_payment'      =>  date('Y-m-d'),
         );
 
         Database::table('bills')->insert($data);
