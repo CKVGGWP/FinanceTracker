@@ -369,13 +369,15 @@
     </div>
 
     <script>
+        var timeout = null;
+
         document.addEventListener("keydown", function(event){
             if(event.target.classList.contains("amountPref")){
                 var input = event.target.value;
-    
+
                 if (event.key === "=") {
                     event.preventDefault(); // Prevent the "=" key from being typed
-    
+
                     try {
                         var result = eval(input);
                         if (!isNaN(result)) {
@@ -384,6 +386,16 @@
                     } catch (error) {
                         console.error("Invalid expression: " + input);
                     }
+                } else {
+                    clearTimeout(timeout);
+
+                    timeout = setTimeout(function(){
+                        if (event.target.value.trim() == '') {
+                            return;
+                        } else if(event.target.value.indexOf('.') == -1 && !isNaN(event.target.value)){
+                            event.target.value = event.target.value + '.00';
+                        }
+                    }, 1000);
                 }
             }
         });

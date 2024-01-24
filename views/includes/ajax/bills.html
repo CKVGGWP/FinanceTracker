@@ -77,9 +77,9 @@
                 <div class="col-md-12">
                     <label>{{__('bills.bills-form.label.payment-type')}}</label>
                     <select class="form-control select2" name="payment_type">
-                        <option value="0" @if($bills->type == '1') selected @endif>
+                        <option value="1" @if($bills->type == '1') selected @endif>
                             {{__('bills.bills-form.type.monthly')}}</option>
-                        <option value="1" @if($bills->type == '2') selected @endif>
+                        <option value="2" @if($bills->type == '2') selected @endif>
                             {{__('bills.bills-form.type.yearly')}}</option>
                     </select>
                 </div>
