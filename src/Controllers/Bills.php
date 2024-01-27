@@ -15,7 +15,7 @@ class Bills {
         $title = __('pages.sections.bills');
         $user = Auth::user();
         $accounts = Database::table('accounts')->where('user', $user->id)->orderBy("id", false)->get();
-        $categories = Database::table('categories')->where('user', $user->id)->orderBy("id", false)->get();
+        $categories = Database::table('categories')->where('user', $user->id)->where('type','expense')->orderBy("id", false)->get();
         $incomecategories = Database::table('categories')->where('user',$user->id)->where('type','Income')->orderBy("id", false)->get();
         $bills = Database::table("bills")->where("bills`.`user", $user->id)->leftJoin("accounts", "bills.account","accounts.id")->leftJoin("categories", "bills.category","categories.id")->orderBy("bills.id", false)->get("`bills.next_payment`","`bills.type`","`bills.id`", "`bills.title`", "`bills.amount`", "`bills.deadline`", "`bills.reminder_day`", "`bills.date_added`", "`bills.date_updated`", "`bills.status`", "`accounts.name` as accountname", "`categories.name` as categoryname");
         $monthly_bill_payment_count = Database::table('bill_payment')->where('user', $user->id)->where('MONTH(date_paid)', date('m'))->where('YEAR(date_paid)', date('Y'))->where('bill_type', '1')->count('id','total')[0]->total;

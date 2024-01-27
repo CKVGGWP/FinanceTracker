@@ -140,7 +140,6 @@ class Auth {
 
             if ($loan->paid == 2) continue;
             if ($loan->start_date > date('Y-m-d')) continue;
-            if ($loan->end_date < date('Y-m-d')) continue;
 
             $checkExpenses = Database::table('expenses')->where('title', $loan->title)->where('user', $user->id)->where('MONTH(expense_date)', date('m'))->where('YEAR(expense_date)', date('Y'))->first();
 
