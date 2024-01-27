@@ -118,7 +118,11 @@ class Auth {
             }
         }
 
-        return $responseArr;
+        echo "<pre>";
+        print_r($responseArr);
+        echo "</pre>";
+
+        // return $responseArr;
     }
 
     /**
@@ -133,14 +137,17 @@ class Auth {
 
         foreach ($loans as $loan){
             $message = "";
+
+            if ($loan->paid == 2) continue;
+            if ($loan->start_date > date('Y-m-d')) continue;
+            if ($loan->end_date < date('Y-m-d')) continue;
+
             $checkExpenses = Database::table('expenses')->where('title', $loan->title)->where('user', $user->id)->where('MONTH(expense_date)', date('m'))->where('YEAR(expense_date)', date('Y'))->first();
 
             if (!empty($checkExpenses)) continue;
 
             $type = 3;
             
-            if ($loan->paid == 2) continue;
-
             $today = date("Y-m-d");
             $deadline = $loan->deadline;
             $reminder_day = $loan->reminder_day;
@@ -149,12 +156,6 @@ class Auth {
 
             $reminder_date = date("Y-m-d", strtotime($reminder_date));
             $deadline_date = date("Y-m-d", strtotime($deadline_date));
-            // $dateArr = [];
-
-            // array_push($dateArr, $reminder_date);
-            // array_push($dateArr, $deadline_date);
-
-            // if (!in_array($today, $dateArr)) continue;
 
             if ($today == $reminder_date){
                 $message = "Your loan payment for " . $loan->title . " with amount " . $loan->amount . " is due on " . date("F j, Y", strtotime($deadline_date)) . ". Please make payment to avoid penalties.";
@@ -232,7 +233,11 @@ class Auth {
             }
         }
 
-        return $responseArr;
+        echo "<pre>";
+        print_r($responseArr);
+        echo "</pre>";
+
+        // return $responseArr;
     }
 
     public function bill_reminder($user){
@@ -265,17 +270,21 @@ class Auth {
                 $billMonth = date("m", strtotime($next_payment));
                 $billYear = date("Y", strtotime($next_payment));
 
-                if ($billMonth != date('m') && $billYear != date('Y')) continue;
+                if ($billMonth == date('m') && $billYear == date('Y')){
+                    $bill_payment = Database::table('bill_payment')->where('bill_id', $billId)->where('user', $user->id)->where('MONTH(date_paid)', date('m'))->where('YEAR(date_paid)', date('Y'))->where('bill_type', $billType)->first();
+
+                    if (!empty($bill_payment)) continue;
+                }
             }
 
             if ($today == $reminder_date){
                 $message = "Your bill payment for " . $billTitle . " is due on " . date("F j, Y", strtotime($deadline_date)) . ". Please make payment to avoid penalties.";
-
             } else if ($today == $deadline_date){
                 $message = "Your bill payment for " . $billTitle . " is due today. Please make payment to avoid penalties.";
-
             } else if ($today > $deadline_date){
                 $message = "Your bill payment for " . $billTitle . " was due on " . date("F j, Y", strtotime($deadline_date)) . ". Please make payment to avoid penalties.";
+            } else {
+                continue;
             }
 
             $send = Mail::send(
