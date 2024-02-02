@@ -82,6 +82,10 @@ class Overview{
         }
 
         krsort($financeArr);
+
+        foreach ($financeArr as $year => $months) {
+            ksort($financeArr[$year]);
+        }
         
         $stats['totalIncome'] = 0;
         $stats['totalExpenses'] = 0;
