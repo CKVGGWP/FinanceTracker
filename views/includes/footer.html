@@ -375,8 +375,8 @@
             if(event.target.classList.contains("amountPref")){
                 var input = event.target.value;
 
-                if (event.key === "=") {
-                    event.preventDefault(); // Prevent the "=" key from being typed
+                if (event.key === "Enter") {
+                    event.preventDefault(); // Prevent the "Enter" key
 
                     try {
                         var result = eval(input);

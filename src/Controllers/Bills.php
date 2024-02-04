@@ -24,27 +24,34 @@ class Bills {
         $bill = new \StdClass();
 
         $yearly_bill_payment_count = 0;
+        $bill_amount_paid = 0;
+        $bill_amount_total = 0;
 
         $billArr = [];
 
         foreach ($bills as $bill){
             $bill_status = 0;
+            
+            $bill_amount_total += $bill->amount;
 
             if ($bill->type == 1){
                 $bill_payment = Database::table('bill_payment')->where('bill_id', $bill->id)->where('MONTH(date_paid)', date('m'))->where('YEAR(date_paid)', date('Y'))->where('user', $user->id)->where('bill_type', '1')->first();
                 if (!empty($bill_payment)) {
                     $bill_status = 1;
+                    $bill_amount_paid += $bill->amount;
                 }
             } else {
                 $bill_payment = Database::table('bill_payment')->where('bill_id', $bill->id)->where('YEAR(date_paid)', date('Y') - 1)->where('user', $user->id)->where('bill_type', '2')->first();
                 if (!empty($bill_payment)) {
                     $bill_status = 1;
                     $yearly_bill_payment_count++;
+                    $bill_amount_paid += $bill->amount;
                 } else {
                     $bill_payment = Database::table('bill_payment')->where('bill_id', $bill->id)->where('YEAR(date_paid)', date('Y'))->where('user', $user->id)->where('bill_type', '2')->first();
                     if (!empty($bill_payment)) {
                         $bill_status = 1;
                         $yearly_bill_payment_count++;
+                        $bill_amount_paid += $bill->amount;
                     }
                 }
 
@@ -69,6 +76,8 @@ class Bills {
 
         $stats['bill_payment_count'] = $bill_payment_count;
         $stats['bill_count'] = $bill_count;
+        $stats['bill_amount_paid'] = money($bill_amount_paid);
+        $stats['bill_amount_total'] = money($bill_amount_total);
         $stats['percentage'] = $bill_count > 0 ? round(($bill_payment_count / $bill_count) * 100) : 0;
 
         return view('bill',compact("user","title","accounts","categories", "bills", "billArr", "stats", "incomecategories"));
