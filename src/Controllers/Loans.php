@@ -25,7 +25,7 @@ class Loans{
         $total_full_paid = 0;
 
         foreach ($loans as $loan){
-            $total_loan_amount += $loan->amount;
+            if ($loan->paid != 2) $total_loan_amount += $loan->amount;
             $total_loan_balance += $loan->amount_remaining;
             if ($loan->paid == 1) {
                 $total_partially_paid += 1;

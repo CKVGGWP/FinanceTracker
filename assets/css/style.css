@@ -514,6 +514,11 @@ a.dt-button:hover {
     border-radius: 3px !important;
     height: 33px;
 }
+
+.dataTables_length label {
+    margin-left: 10px;
+}
+
 .dataTables_filter input:focus {
     outline: none;
     border-color: #3DA4FF;

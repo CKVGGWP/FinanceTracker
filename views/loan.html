@@ -149,7 +149,8 @@
         $(document).ready(function() {
             $.fn.dataTable.moment("MMM DD, YYYY");
             $('#datatable').DataTable({
-                dom: 'Bfrtip',
+                dom: 'Bfrltip',
+                lengthMenu: [5, 10, 20, 50, 100],
                 columnDefs: [
                   { type: 'currency', targets: 2 }
                 ],
