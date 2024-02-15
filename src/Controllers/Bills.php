@@ -32,29 +32,31 @@ class Bills {
         foreach ($bills as $bill){
             $bill_status = 0;
             
-            $bill_amount_total += $bill->amount;
+            if ($bill->status == 1){
+                $bill_amount_total += $bill->amount;
 
-            if ($bill->type == 1){
-                $bill_payment = Database::table('bill_payment')->where('bill_id', $bill->id)->where('MONTH(date_paid)', date('m'))->where('YEAR(date_paid)', date('Y'))->where('user', $user->id)->where('bill_type', '1')->first();
-                if (!empty($bill_payment)) {
-                    $bill_status = 1;
-                    $bill_amount_paid += $bill->amount;
-                }
-            } else {
-                $bill_payment = Database::table('bill_payment')->where('bill_id', $bill->id)->where('YEAR(date_paid)', date('Y') - 1)->where('user', $user->id)->where('bill_type', '2')->first();
-                if (!empty($bill_payment)) {
-                    $bill_status = 1;
-                    $yearly_bill_payment_count++;
-                    $bill_amount_paid += $bill->amount;
+                if ($bill->type == 1){
+                    $bill_payment = Database::table('bill_payment')->where('bill_id', $bill->id)->where('MONTH(date_paid)', date('m'))->where('YEAR(date_paid)', date('Y'))->where('user', $user->id)->where('bill_type', '1')->first();
+                    if (!empty($bill_payment)) {
+                        $bill_status = 1;
+                        $bill_amount_paid += $bill->amount;
+                    }
                 } else {
-                    $bill_payment = Database::table('bill_payment')->where('bill_id', $bill->id)->where('YEAR(date_paid)', date('Y'))->where('user', $user->id)->where('bill_type', '2')->first();
+                    $bill_payment = Database::table('bill_payment')->where('bill_id', $bill->id)->where('YEAR(date_paid)', date('Y') - 1)->where('user', $user->id)->where('bill_type', '2')->first();
                     if (!empty($bill_payment)) {
                         $bill_status = 1;
                         $yearly_bill_payment_count++;
                         $bill_amount_paid += $bill->amount;
+                    } else {
+                        $bill_payment = Database::table('bill_payment')->where('bill_id', $bill->id)->where('YEAR(date_paid)', date('Y'))->where('user', $user->id)->where('bill_type', '2')->first();
+                        if (!empty($bill_payment)) {
+                            $bill_status = 1;
+                            $yearly_bill_payment_count++;
+                            $bill_amount_paid += $bill->amount;
+                        }
                     }
-                }
 
+                }                
             }
 
             $bill_payment_count = $monthly_bill_payment_count + $yearly_bill_payment_count;
