@@ -103,6 +103,7 @@
                     <div class="chart-insights">
                     <p><strong>{{ $stats['total_full_paid']}}</strong> {{__('loans.info-box.out-of')}} <strong>{{ $stats['loan_count']}}</strong> {{__('loans.info-box.paid')}}</p>
                     <p>You are paying <strong>{{ money($stats['total_loan_amount'])}}</strong> every month</p>
+                    <p>You have paid <strong>{{ money($stats['total_amount_paid_this_month'])}}</strong> out of <strong>{{ money($stats['total_loan_amount'])}}</strong> this month</p>
                     </div>
                   </section>
                   <div></div>

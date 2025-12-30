@@ -28,7 +28,9 @@ Router::group(array(
         Router::post('/account/create', 'Overview@createaccount');
         Router::post('/account/update', 'Overview@updateaccount');
         Router::post('/account/update/view', 'Overview@updateaccountview');
+        Router::post('/account/viewhistory', 'Overview@history');
         Router::post('/account/delete', 'Overview@deleteaccount');
+        Router::post('/account/addLoan', 'Overview@addLoanList');
         
         // Budget
         Router::get('/budget', 'Budget@get');

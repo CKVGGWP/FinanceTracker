@@ -127,8 +127,6 @@ class Bills {
             $balance = $account->balance - $amount;
         }
 
-        Database::table('accounts')->where('id', $accountId)->update(array("balance" => $balance));
-
         return true;
     }
 
@@ -145,8 +143,9 @@ class Bills {
         $bill_payments = Database::table('bill_payment')->where('bill_id', input("billid"))->orderBy("id", false)->get();
         $total_paid = Database::table('bill_payment')->where('bill_id', input("billid"))->sum('amount','total')[0]->total;
         $include = (input('type') == 0) ? "includes/ajax/bills" : "includes/ajax/payBills";
+        $advance = input('advance');
 
-        return view($include, compact("bills","accounts", "categories", "bill_payments", "total_paid"));
+        return view($include, compact("bills","accounts", "categories", "bill_payments", "total_paid", "advance"));
     }
 
     /**
@@ -170,6 +169,7 @@ class Bills {
      */
     public function update(){
         $bills = Database::table('bills')->where('id', input("billid"))->first();
+        $account = Database::table('accounts')->where('id', input('account'))->first();
         $user = Auth::user();
         $type = input('type');
 
@@ -190,13 +190,17 @@ class Bills {
             Database::table('bills')->where('id',input('billid'))->update($data);
 
         } else {
+            $advance = input('advance');
             $amount = $bills->amount;
+            $nextPayment = ($bills->next_payment == "0000-00-00 00:00:00") ? date('Y-m-d H:i:s') : $bills->next_payment;
+            $dateToday = date('Y-m-d H:i:s');
+            $paymentDay = ($advance == 1) ? date('Y-m-1 H:i:s', strtotime($nextPayment)) : $dateToday;
             $payment_Arr = array(
                 'bill_id'           =>  input('billid'),
                 'bill_type'         =>  $bills->type,
                 'user'              =>  $user->id,
                 'amount'            =>  $amount,
-                'date_paid'         =>  date('Y-m-d H:i:s'),
+                'date_paid'         =>  $paymentDay,
             );
 
             $expenseArr = array(
@@ -210,10 +214,20 @@ class Bills {
 
             $paymentType = ($bills->type == 1) ? "+ 1 month" : "+ 1 year";
 
-            $next_payment_date = date('Y-m-1', strtotime($paymentType));
+            $next_payment_date = ($advance == 1) ? date('Y-m-1', strtotime($nextPayment . $paymentType)) : date('Y-m-d', strtotime($nextPayment . $paymentType));
 
             self::balance($bills->account, $amount, "minus");
 
+            $history = array(
+                'userId' => $user->id,
+                'accountId' => $bills->account,
+                'fromAmount' => $account->balance,
+                'toAmount' => $account->balance - $amount,
+                'type' => '4',
+                'date_added' => date('Y-m-d H:i:s')
+            );
+
+            Database::table('history')->insert($history);
             Database::table('bill_payment')->insert($payment_Arr);
             Database::table('expenses')->insert($expenseArr);
             Database::table('bills')->where('id',input('billid'))->update(array("next_payment" => $next_payment_date));

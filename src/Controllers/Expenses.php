@@ -34,6 +34,7 @@ class Expenses{
      */
     public function add() {
       $user = Auth::user();
+      $account = Database::table('accounts')->where('id', input('account'))->first();
       $data = array(
           'title'=>escape(input('title')),
           'user'=>$user->id,
@@ -42,10 +43,25 @@ class Expenses{
           'category'=>input('category'),
           'expense_date'=>date('Y-m-d',strtotime(input('expense_date')))
       );
+
+      $toBalance = $account->balance - input('amount');
+
+      $history = array(
+        'userId' => $user->id,
+        'accountId' => input('account'),
+        'fromAmount' => $account->balance,
+        'toAmount' => $toBalance,
+        'type' => 2,
+        'date_added' => date('Y-m-d H:i:s')
+      );
+
       Database::table('expenses')->insert($data);
         if (input('account') != "00") {
           self::balance(input('account'), input('amount'), "minus");
         }
+
+      Database::table('history')->insert($history);
+
       return response()->json(responder("success", __('pages.messages.alright'), __('expenses.messages.add-success'), "reload()"));
     }
 

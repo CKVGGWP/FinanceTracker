@@ -4,6 +4,8 @@ namespace Simcify;
 use BadFunctionCallException;
 use PDO;
 
+date_default_timezone_set('Asia/Manila');
+
 class Database {
     
     /**

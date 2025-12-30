@@ -35,19 +35,31 @@ class Income{
      */
     public function add() {
       $user = Auth::user();
-        $data = array(
-            'title'=>escape(input('title')),
-            'user'=>$user->id,
-            'amount'=>input('amount'),
-            'account'=>input('account'),
-            'category'=>input('category'),
-            'income_date'=>date('Y-m-d',strtotime(input('income_date')))
-        );
-        Database::table('income')->insert($data);
-        if (input('account') != "00") {
-          self::balance(input('account'), input('amount'), "plus");
-        }
-        return response()->json(responder("success", __('pages.messages.alright'), __('income.messages.add-success'), "reload()"));
+      $account = Database::table('accounts')->where('id', input('account'))->first();
+      $data = array(
+          'title'=>escape(input('title')),
+          'user'=>$user->id,
+          'amount'=>input('amount'),
+          'account'=>input('account'),
+          'category'=>input('category'),
+          'income_date'=>date('Y-m-d',strtotime(input('income_date')))
+      );
+
+      $history = array(
+        'userId' => $user->id,
+        'accountId' => $account->id,
+        'fromAmount' => $account->balance,
+        'toAmount' => $account->balance + input('amount'),
+        'type' => 1,
+        'date_added' => date('Y-m-d H:i:s')
+      );
+
+      Database::table('income')->insert($data);
+      if (input('account') != "00") {
+        self::balance(input('account'), input('amount'), "plus");
+      }
+      Database::table('history')->insert($history);
+      return response()->json(responder("success", __('pages.messages.alright'), __('income.messages.add-success'), "reload()"));
     }
 
     /**

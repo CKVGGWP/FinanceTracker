@@ -88,6 +88,8 @@
                                             <li><a class="c-dropdown__item dropdown-item fetch-display-click" url="{{ url('Bills@payView') }}" data="csrf-token:{{csrf_token()}}|billid:{{$billsArr['id']}}|type:{{0}}" holder=".update-form" modal="#update" href=""><i class="mdi mdi-pencil"></i> {{__('bills.bills-table.edit')}}</a></li>
                                             @if($billsArr['status'] != '0' && $billsArr['bill_status'] != '1')
                                             <li><a class="c-dropdown__item dropdown-item fetch-display-click" url="{{ url('Bills@payView') }}" data="csrf-token:{{csrf_token()}}|billid:{{$billsArr['id']}}|type:{{1}}" holder=".update-form" modal="#update" href=""><i class="mdi mdi-cash"></i> {{__('bills.bills-table.pay')}}</a></li>
+                                            @elseif($billsArr['status'] != '0' && $billsArr['bill_status'] == '1')
+                                            <li><a class="c-dropdown__item dropdown-item fetch-display-click" url="{{ url('Bills@payView') }}" data="csrf-token:{{csrf_token()}}|billid:{{$billsArr['id']}}|type:{{1}}|advance:{{1}}" holder=".update-form" modal="#update" href=""><i class="mdi mdi-cash"></i> Pay in advance</a></li>
                                             @endif
                                             <li><a class="send-to-server-click" data="csrf-token:{{csrf_token()}}|billid:{{$billsArr['id']}}" url="{{ url('Bills@delete') }}" warning-title="{{__('bills.messages.are-you-sure')}}" warning-message="{{__('bills.messages.delete')}}" warning-button="{{__('bills.messages.continue')}}" loader="true"><i class="mdi mdi-delete"></i> {{__('bills.bills-table.delete')}}</a></li>
                                         </ul>

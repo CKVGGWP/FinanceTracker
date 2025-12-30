@@ -17,27 +17,37 @@ class Loans{
         $categories = Database::table('categories')->where('user',$user->id)->where('type','expense')->orderBy("id", false)->get();
         $incomecategories = Database::table('categories')->where('user',$user->id)->where('type','Income')->orderBy("id", false)->get();
         $accounts = Database::table('accounts')->where('user', $user->id)->orderBy("id", false)->get();
+        // $loanExpense = Database::table('expenses')->where('user', $user->id)->orderBy("id", false)->get();
         $loans = Database::table("loans")->where("loans`.`user", $user->id)->leftJoin("accounts", "loans.account","accounts.id")->orderBy("loans.id", false)->get("`loans.id`", "`loans.title`", "`loans.amount`", "`loans.payment_terms`", "`loans.amount_remaining`", "`loans.start_date`", "`loans.end_date`", "`loans.deadline`", "`loans.paid`", "`loans.reminder_day`", "`loans.latest_paid_date`", "`accounts.name` as accountname");
         $loan = new \StdClass();
         $total_loan_amount = 0;
         $total_loan_balance = 0;
         $total_partially_paid = 0;
         $total_full_paid = 0;
+        // $total_amount_paid_this_month = 0;
 
         foreach ($loans as $loan){
             if ($loan->paid != 2) $total_loan_amount += $loan->amount;
             $total_loan_balance += $loan->amount_remaining;
+
             if ($loan->paid == 1) {
                 $total_partially_paid += 1;
-            }else if ($loan->paid == 2){
+            } else if ($loan->paid == 2){
                 $total_full_paid += 1;
             }
+
+            // foreach ($loanExpense as $expense){
+            //     if ($loan->title == $expense->title && date('m',strtotime($expense->expense_date)) == date('m') && date('Y',strtotime($expense->expense_date)) == date('Y')){
+            //         $total_amount_paid_this_month += $expense->amount;
+            //     }
+            // }
         }
 
         $stats['total_loan_amount'] = $total_loan_amount;
         $stats['total_loan_balance'] = $total_loan_balance;
         $stats['total_partially_paid'] = $total_partially_paid;
         $stats['total_full_paid'] = $total_full_paid;
+        $stats['total_amount_paid_this_month'] = Database::table('expenses')->where('user', $user->id)->where('category', 0)->where('YEAR(expense_date)', date('Y'))->where('MONTH(expense_date)', date('m'))->sum('amount','total')[0]->total;
         $stats['loan_count'] = Database::table('loans')->where('user', $user->id)->count('id','total')[0]->total;
         $stats['percentage'] = $stats['loan_count'] > 0 ? round(($stats['total_full_paid'] / $stats['loan_count']) * 100) : 0;
 
@@ -131,6 +141,7 @@ class Loans{
     public function update(){
         $loans = Database::table('loans')->where('id', input("loanid"))->first();
         $expenses = Database::table('expenses')->where('title', $loans->title)->where('user', $loans->user)->get();
+        $account = Database::table('accounts')->where('id', input('account'))->first();
         $user = Auth::user();
         $type = input('type');
 
@@ -202,6 +213,15 @@ class Loans{
                 'updated_at'        =>  date('Y-m-d H:i:s'),
             );
 
+            $history = array(
+                'userId' => $user->id,
+                'accountId' => $account->id ,
+                'fromAmount' => $account->balance,
+                'toAmount' => $account->balance - $amount,
+                'type' => '3',
+                'date_added' => date('Y-m-d H:i:s')
+            );
+            Database::table('history')->insert($history);
             Database::table('expenses')->insert($expenseArr);
         }
 

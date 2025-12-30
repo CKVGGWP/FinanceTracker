@@ -30,6 +30,7 @@ return [
         'income' => 'Income',
         'expenses' => 'Expenses',
         'add-account' => 'Add Account',
+        'add-loan' => 'Add Loan',
         'save-account' => 'Save Account',
         'close' => 'Close',
     ],
@@ -50,6 +51,7 @@ return [
     'accounts-table' => [
         'accounts' => 'Accounts',
         'balance' => 'Balance',
+        'credit-limit' => 'Credit Limit',
         'overview' => 'Financial Overview',
         'transactions' => 'Transactions',
         'updated-on' => 'Updated On',
@@ -66,6 +68,14 @@ return [
         'total-expenses' => 'Total Expenses',
         'total-savings' => 'Total Savings',
         'total' => 'Total',
+        'loan' => 'Loan List',
+        'loan-title' => 'Loan Title',
+        'loan-amount' => 'Loan Amount',
+        'loan-date' => 'Loan Date',
+        'loan-date-return' => 'Return Date',
+        'loan-note' => 'Loan Notes',
+        'loan-status' => 'Loan Status',
+        'history' => 'History',
     ],
 
     'accounts-form' => [
@@ -73,26 +83,45 @@ return [
         'add-intro' => 'Create a new account.',
         'update-title' => 'Update Account',
         'update-intro' => 'Update %s details.',
+        'add-loan-title' => 'Add Loan',
+        'add-loan-intro' => 'Add a new loan.',
         'label' => [
             'name' => 'Name',
             'balance' => 'Account balance',
+            'credit-limit' => 'Credit Limit',
             'type' => 'Type',
-            'status' => 'Status'
+            'status' => 'Status',
+            'loan-title' => 'Loan Title',
+            'loan-amount' => 'Loan Amount',
+            'loan-date' => 'Loan Date',
+            'loan-date-return' => 'Return Date',
+            'loan-note' => 'Loan Notes',
+            'loan-status' => 'Loan Status',
+            'account' => 'Account',
+            'other' => 'Other',
         ],
         'placeholder' => [
             'name' => 'e.g. PayPal',
-            'balance' => 'Account balance'
+            'balance' => 'Account balance',
+            'loan-title' => 'e.g. Acquaintance\'s loan',
+            'loan-amount' => 'Loan amount',
+            'loan-date' => 'Loan date',
+            'loan-date-return' => 'Return date',
+            'loan-note' => 'To be returned in 2 weeks',
         ],
         'types' => [
             'cash' => 'Cash',
             'bank' => 'Bank',
             'card' => 'Card',
+            'credit' => 'Credit',
             'ewallet' => 'E-Wallet',
             'other' => 'Other',
         ],
         'status' => [
             'active' => 'Active',
             'inactive' => 'Inactive',
+            'paid' => 'Paid',
+            'unpaid' => 'Unpaid',
         ]
     ],
 
@@ -104,6 +133,9 @@ return [
         'add-success' => 'Account successfully added',
         'edit-success' => 'Account successfully updated',
         'delete-success' => 'Account successfully deleted',
+        'add-loan-success' => 'Loan successfully added',
+        'edit-loan-success' => 'Loan successfully updated',
+        'delete-loan-success' => 'Loan successfully deleted',
     ],
     'date-range-label' => [
         'today' => 'Today',
@@ -115,6 +147,24 @@ return [
         'custom-range' => 'Custom Range',
         'apply' => 'Apply',
         'cancel' => 'Cancel',
+    ],
+
+    'modal' => [
+        'history-title' => 'Account History',
+        'Transactions-for-account' => 'Transactions for account: %s',
+        'from-amount' => 'From Amount',
+        'to-amount' => 'To Amount',
+        'type' => 'Type',
+        'date-added' => 'Date Added',
+        'no-history' => 'No history available for this account.',
+        'difference' => 'Difference',
+        'types' => [
+            'income' => 'Income',
+            'expense' => 'Expense',
+            'loan' => 'Loan',
+            'bill' => 'Bills',
+            'edit' => 'Balance Edited',
+        ],
     ],
 
 ];

@@ -233,23 +233,110 @@
                                     @if(!empty($financeArr))
                                     @foreach($financeArr as $year => $months)
                                         @foreach($months as $month => $data)
+                                        @if($year == date("Y"))
                                             <tr>
                                                 <td>{{ money($data['income']) }}</td>
                                                 <td>{{ money($data['expenses']) }}</td>
                                                 <td>{{ money($data['savings']) }}</td>
                                                 <td>{{ $month }} {{ $year }}</td>
                                             </tr>
+                                        @endif
                                         @endforeach
+                                    @endforeach
+                                    <tr>
+                                        <td><strong>{{ money($stats['incomeYearly']) }}</strong></td>
+                                        <td><strong>{{ money($stats['expensesYearly']) }}</strong></td>
+                                        <td><strong>{{ money($stats['savingsYearly']) }}</strong></td>
+                                        <td><strong>{{__('overview.accounts-table.total')}} for {{ date("Y") }}</strong></td>
+                                    </tr>
+                                    @foreach($stats['previousYearsIncome'] as $year => $income)
+                                    @if($year != 0)
+                                    <tr>
+                                        <td><strong>{{ money($income) }}</strong></td>
+                                        <td><strong>{{ money($stats['previousYearsExpenses'][$year]) }}</strong></td>
+                                        <td><strong>{{ money($income - $stats['previousYearsExpenses'][$year]) }}</strong></td>
+                                        <td><strong>{{__('overview.accounts-table.total')}} for {{ $year }}</strong></td>
+                                    </tr>
+                                    @endif
                                     @endforeach
                                     <tr>
                                         <td><strong>{{ money($stats['totalIncome']) }}</strong></td>
                                         <td><strong>{{ money($stats['totalExpenses']) }}</strong></td>
                                         <td><strong>{{ money($stats['totalSavings']) }}</strong></td>
-                                        <td><strong>{{__('overview.accounts-table.total')}}</strong></td>
+                                        <td><strong>Grand Total</strong></td>
                                     </tr>
                                     @else
                                     <tr>
                                         <td colspan="4" class="text-center">{{__('overview.graph.empty')}}</td>
+                                    </tr>
+                                    @endif
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <button class="btn btn-primary pull-right ml-5" type="button" data-toggle="modal" data-target="#addLoanList"><span><i class="mdi mdi-plus-circle-outline"></i></span>{{__('overview.button.add-loan')}}</button>
+                        <h4>{{__('overview.accounts-table.loan')}}</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive longer">
+                            <table class="table display" id="datatable">
+                                <thead>
+                                    <tr>
+                                        <th>{{__('overview.accounts-table.loan-title')}}</th>
+                                        <th>{{__('overview.accounts-table.loan-amount')}}</th>
+                                        <th>{{__('overview.accounts-table.loan-date')}}</th>
+                                        <th>{{__('overview.accounts-table.loan-date-return')}}</th>
+                                        <th>{{__('overview.accounts-table.loan-note')}}</th>
+                                        <th>{{__('overview.accounts-table.loan-status')}}</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if(!empty($loanList))
+                                    @foreach($loanList as $loans)
+                                        <tr>
+                                            <td>
+                                                <strong>{{ $loans->title }}</strong><br>
+                                                <p class="text-primary">Loan</p>
+                                                @if(empty($loans->accountName))
+                                                <span>{{__('income.income-table.other')}} </span>
+                                                @else
+                                                <span>{{$loans->accountName}} </span>
+                                                @endif
+                                            </td>
+                                            <td>{{ money($loans['amount']) }}</td>
+                                            <td>{{ date('M d, Y', strtotime($loans->loan_date))  }}</td>
+                                            <td>{{ date('M d, Y', strtotime($loans->date_to_be_paid)) }}</td>
+                                            <td>{{ $loans->notes }}</td>
+                                            <td>
+                                                @if($loans->notes == '1')
+                                                <strong class="text-success"><i class="mdi mdi-checkbox-blank-circle"></i> {{__('overview.accounts-table.active')}}</strong>
+                                                @else
+                                                <strong class="text-danger"><i class="mdi mdi-checkbox-blank-circle"></i> {{__('overview.accounts-table.inactive')}}</strong>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <div class="dropdown">
+                                                  <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">{{__('income.income-table.actions')}} <span class="caret"></span> </button>
+                                                  <ul class="dropdown-menu">
+                                                      <li><a class="c-dropdown__item dropdown-item fetch-display-click" url="{{url('Income@updateview')}}" data="csrf-token:{{csrf_token()}}|listId:{{$loans->id}}" holder=".update-form" modal="#update" href=""><i class="mdi mdi-pencil"></i> {{__('income.income-table.edit')}}</a></li>
+                                                      <li><a class="send-to-server-click" data="csrf-token:{{csrf_token()}}|listId:{{$loans->id}}" url="{{ url('Income@delete') }}" warning-title="{{__('income.messages.are-you-sure')}}" warning-message="{{__('income.messages.delete')}}" warning-button="{{__('income.messages.continue')}}" loader="true"><i class="mdi mdi-delete"></i> {{__('income.income-table.delete')}}</a></li>
+                                                  </ul>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                    @else
+                                    <tr>
+                                        <td colspan="7" class="text-center">{{__('overview.graph.empty')}}</td>
                                     </tr>
                                     @endif
                                 </tbody>
@@ -286,6 +373,8 @@
                                                     {{__('overview.accounts-form.types.bank')}}
                                                 @elseif($account->type == 'Card')
                                                     {{__('overview.accounts-form.types.card')}}
+                                                @elseif($account->type == 'Credit')
+                                                    {{__('overview.accounts-form.types.credit')}}
                                                 @elseif($account->type == 'E-Wallet')
                                                     {{__('overview.accounts-form.types.ewallet')}}
                                                 @elseif($account->type == 'Other')
@@ -296,6 +385,8 @@
                                             </span></td>
                                         <td><strong>{{ money($account->balance) }}</strong>
                                             <br><span>{{__('overview.accounts-table.balance')}}</span></td>
+                                        <td><strong>{{ money($account->credit_limit) }}</strong>
+                                            <br><span>{{__('overview.accounts-table.credit-limit')}}</span></td>
                                         <td><strong>{{ $account->transactions }}</strong>
                                             <br><span>{{__('overview.accounts-table.transactions')}}</span></td>
                                         <td><strong>{{ date('M d, Y', strtotime($account->updated_at)) }}</strong>
@@ -312,6 +403,7 @@
                                                 <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">{{__('overview.accounts-table.actions')}}<span class="caret"></span> </button>
                                                 <ul class="dropdown-menu">
                                                     <li><a class="c-dropdown__item dropdown-item fetch-display-click" url="{{url('Overview@updateaccountview')}}" data="csrf-token:{{csrf_token()}}|accountid:{{$account->id}}" holder=".update-form" modal="#update" href=""><i class="mdi mdi-pencil"></i> {{__('overview.accounts-table.edit')}}</a></li>
+                                                    <li><a class="c-dropdown__item dropdown-item fetch-display-click" url="{{url('Overview@history')}}" data="csrf-token:{{csrf_token()}}|accountid:{{$account->id}}" holder=".history-form" modal="#history" href=""><i class="mdi mdi-history"></i> {{__('overview.accounts-table.history')}}</a></li>
                                                     <li><a class="send-to-server-click" data="csrf-token:{{csrf_token()}}|accountid:{{$account->id}}" url="{{ url('Overview@deleteaccount') }}" warning-title="{{__('overview.messages.are-you-sure')}}" warning-message="{{__('overview.messages.delete')}}" warning-button="{{__('overview.messages.continue')}}" loader="true"><i class="mdi mdi-delete"></i> {{__('overview.accounts-table.delete')}}</a></li>
                                                 </ul>
                                             </div>
@@ -319,8 +411,16 @@
                                     </tr>
                                     @endforeach
                                     <tr>
-                                        <td colspan="4" class="text-center">Total Balance</td>
+                                        <td colspan="4" class="text-center">Total Debit Amount</td>
                                         <td colspan="3" class="text-center"><strong>{{ money($stats['total_balance']) }}</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4" class="text-center">Total Credit Amount</td>
+                                        <td colspan="3" class="text-center"><strong>{{ money($stats['total_credit']) }} / {{ money($stats['credit_limit']) }}</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4" class="text-center">Credit Owed</td>
+                                        <td colspan="3" class="text-center"><strong>{{ money($stats['credit_owed']) }}</strong></td>
                                     </tr>
                                     <tr>
                                         <td colspan="4" class="text-center">Total Transactions</td>
@@ -342,6 +442,13 @@
         <!-- footer -->
         @include('includes/footer')
 
+    </div>
+
+    <!-- view history modal -->
+    <div class="modal fade" id="history" role="dialog">
+      <div class="modal-dialog modal-lg">
+        <div class="history-form"></div>
+      </div>
     </div>
 
     <!--Add Account-->
@@ -376,11 +483,21 @@
                         <div class="form-group">
                             <div class="row">
                                 <div class="col-md-12">
+                                    <label>{{__('overview.accounts-form.label.credit-limit')}}</label>
+                                    <span class="input-prefix">{{ currency() }}</span>
+                                    <input type="number" class="form-control prefix" value="{{$account->credit_limit}}" step="0.01" data-parsley-pattern="^-?[0-9]*\.?[0-9]{0,2}$" name="credit_limit" placeholder="{{__('overview.accounts-form.placeholder.credit-limit')}}" >
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
                                     <label>{{__('overview.accounts-form.label.type')}}</label>
                                     <select class="form-control select2" name="type">
                                         <option value="Cash">{{__('overview.accounts-form.types.cash')}}</option>
                                         <option value="Bank">{{__('overview.accounts-form.types.bank')}}</option>
                                         <option value="Card">{{__('overview.accounts-form.types.card')}}</option>
+                                        <option value="Credit">{{__('overview.accounts-form.types.credit')}}</option>
                                         <option value="E-Wallet">{{__('overview.accounts-form.types.ewallet')}}</option>
                                         <option value="Other">{{__('overview.accounts-form.types.other')}}</option>
                                     </select>
@@ -414,6 +531,98 @@
         <div class="update-form"></div>
       </div>
     </div>
+
+    <!--Add Loan List-->
+    <div class="modal fade" id="addLoanList" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">{{__('overview.accounts-form.add-loan-title')}}</h4>
+                </div>
+                <form class="simcy-form" action="{{ url('Overview@addLoanList') }}" data-parsley-validate="" loader="true" method="POST" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <p>{{__('overview.accounts-form.add-loan-intro')}}</p>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>{{__('overview.accounts-form.label.loan-title')}}</label>
+                                    <input type="text" class="form-control" name="title" placeholder="{{__('overview.accounts-form.placeholder.loan-title')}}" required="">
+                                    <input type="hidden" name="csrf-token" value="{{csrf_token()}}" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>{{__('overview.accounts-form.label.loan-amount')}}</label>
+                                    <span class="input-prefix">{{ currency() }}</span>
+                                    <input type="number" class="form-control prefix" step="0.01" data-parsley-pattern="^[+-]?[0-9]*\.[0-9]{2}$" name="amount" placeholder="{{__('overview.accounts-form.placeholder.loan-amount')}}" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>{{__('overview.accounts-form.label.account')}}</label>
+                                    <select class="form-control select2" name="account">
+                                        <option value="00">{{__('overview.accounts-form.label.other')}}</option>
+                                      @if(!empty($accounts))
+                                      @foreach($accounts as $account)
+                                        <option value="{{ $account->id }}">{{ $account->name }}</option>
+                                      @endforeach
+                                      @endif
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>{{__('overview.accounts-form.label.loan-date')}}</label>
+                                    <input type="text" class="form-control datepicker" name="loan_date" value="{{date('m/d/Y')}}" required="">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>{{__('overview.accounts-form.label.loan-date-return')}}</label>
+                                    <input type="text" class="form-control datepicker" name="date_to_be_paid" value="{{date('m/d/Y')}}" required="">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>{{__('overview.accounts-form.label.loan-note')}}</label>
+                                    <textarea class="form-control" name="notes" placeholder="{{__('overview.accounts-form.placeholder.loan-note')}}"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12 ">
+                                    <label>{{__('overview.accounts-form.label.loan-status')}}</label>
+                                    <select class="form-control select2" name="status">
+                                        <option value="0">{{__('overview.accounts-form.status.unpaid')}}</option>
+                                        <option value="1">{{__('overview.accounts-form.status.paid')}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">{{__('overview.button.close')}}</button>
+                        <button type="submit" class="btn btn-primary">{{__('overview.button.add-loan')}}</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+
     <!-- scripts -->
     <script src="{{ url('') }}lang/{{env('APP_LOCALE_DEFAULT')}}/simcify-lang.js"></script> <!-- js language translation -->
     <script src="{{ asset('assets/js/jquery-3.2.1.min.js') }}"></script>

@@ -27,6 +27,15 @@
                         <div class="form-group">
                             <div class="row">
                                 <div class="col-md-12">
+                                    <label>{{__('overview.accounts-form.label.credit-limit')}}</label>
+                                    <span class="input-prefix">{{ currency() }}</span>
+                                    <input type="number" class="form-control prefix" value="{{$account->credit_limit}}" step="0.01" data-parsley-pattern="^-?[0-9]*\.?[0-9]{0,2}$" name="credit_limit" placeholder="{{__('overview.accounts-form.placeholder.credit-limit')}}" >
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
                                     <label>{{__('overview.accounts-form.label.type')}}</label>
                                     <select class="form-control select2" name="type">
                                         <option value="Cash" @if($account->type == 'Cash') selected @endif >
@@ -35,6 +44,8 @@
                                             {{__('overview.accounts-form.types.bank')}}</option>
                                         <option value="Card" @if($account->type == 'Card') selected @endif >
                                             {{__('overview.accounts-form.types.card')}}</option>
+                                        <option value="Credit" @if($account->type == 'Credit') selected @endif >
+                                            {{__('overview.accounts-form.types.credit')}}</option>
                                         <option value="E-Wallet" @if($account->type == 'E-Wallet') selected @endif >
                                             {{__('overview.accounts-form.types.ewallet')}}</option>
                                         <option value="Other" @if($account->type == 'Other') selected @endif >

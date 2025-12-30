@@ -1,0 +1,55 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h4 class="modal-title">{{ sprintf( __('overview.modal.Transactions-for-account'), ( $account->name ) ) }}</h4>
+    </div>
+    <div class="modal-body">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive longer">
+                    <table class="table display" id="datatable">
+                        <thead>
+                            <tr>
+                                <th>{{__('overview.modal.from-amount')}}</th>
+                                <th>{{__('overview.modal.to-amount')}}</th>
+                                <th>{{__('overview.modal.difference')}}</th>
+                                <th>{{__('overview.modal.type')}}</th>
+                                <th>{{__('overview.modal.date-added')}}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(!empty($history))
+                            @foreach($history as $transaction)
+                            <tr>
+                                <td>{{ money($transaction->fromAmount) }}</td>
+                                <td>{{ money($transaction->toAmount) }}</td>
+                                <td>{{ money($transaction->fromAmount - $transaction->toAmount) }}</td>
+                                <td>
+                                    @if($transaction->type == 1)
+                                        {{__('overview.modal.types.income')}}
+                                    @elseif($transaction->type == 2)
+                                        {{__('overview.modal.types.expense')}}
+                                    @elseif($transaction->type == 3)
+                                        {{__('overview.modal.types.loan')}}
+                                    @elseif($transaction->type == 4)
+                                        {{__('overview.modal.types.bill')}}
+                                    @elseif($transaction->type == 5)
+                                        {{__('overview.modal.types.edit')}}
+                                    @endif
+                                <td>{{ date('F j, Y g:i a', strtotime($transaction->date_added)) }}</td>
+                            </tr>
+                            @endforeach
+                            @else
+                            <tr>
+                                <td colspan="2">{{__('overview.modal.no-history')}}</td>
+                            </tr>
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">{{__('overview.button.close')}}</button>
+    </div>
+</div>
