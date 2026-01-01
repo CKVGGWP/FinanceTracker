@@ -181,7 +181,7 @@ class Overview{
     public function history(){
         $user = Auth::user();
         $account = Database::table('accounts')->where('id', input("accountid"))->first();
-        $history = Database::table('history')->where('accountId', $account->id)->where('userId', $user->id)->orderBy('date_added', false)->get();
+        $history = Database::table('history')->where('accountId', $account->id)->where('userId', $user->id)->orderBy('date_added', false)->limit(10)->get();
 
         return view("includes/ajax/viewTransactions", compact('account','history'));
     }

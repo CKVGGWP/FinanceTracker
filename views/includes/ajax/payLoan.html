@@ -2,7 +2,7 @@
     <div class="modal-header">
         <h4 class="modal-title">{{ sprintf(__('loans.info-box.pay-loan'), ( $loans->title )) }}</h4>
     </div>
-    <form class="simcy-form" action="{{ url('Loans@update') }}" data-parsley-validate="" method="POST" loader="true">
+    <form class="simcy-form" action="{{ url('Loans@payLoan') }}" data-parsley-validate="" method="POST" loader="true">
         <div class="modal-body">
             <div class="form-group">
                 <input type="hidden" name="csrf-token" value="{{csrf_token()}}" />

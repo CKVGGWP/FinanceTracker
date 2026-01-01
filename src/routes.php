@@ -55,6 +55,7 @@ Router::group(array(
         Router::post('/loan/add', 'Loans@add');
         Router::post('/loan/view', 'Loans@view');
         Router::post('/loan/update', 'Loans@update');
+        Router::post('/loan/payLoan', 'Loans@payLoan');
         Router::post('/loan/update/view', 'Loans@payView');
         Router::post('/loan/delete', 'Loans@delete');
 

@@ -22,7 +22,15 @@
                             <tr>
                                 <td>{{ money($transaction->fromAmount) }}</td>
                                 <td>{{ money($transaction->toAmount) }}</td>
-                                <td>{{ money($transaction->fromAmount - $transaction->toAmount) }}</td>
+                                <td>
+                                    @if($transaction->type == 1)
+                                        {{ money($transaction->toAmount - $transaction->fromAmount) }}
+                                    @elseif($transaction->type == 5 || $transaction->toAmount > $transaction->fromAmount)
+                                        {{ money($transaction->toAmount - $transaction->fromAmount) }}
+                                    @else
+                                        {{ money($transaction->fromAmount - $transaction->toAmount) }}
+                                    @endif
+                                </td>
                                 <td>
                                     @if($transaction->type == 1)
                                         {{__('overview.modal.types.income')}}

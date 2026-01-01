@@ -169,7 +169,8 @@ class Bills {
      */
     public function update(){
         $bills = Database::table('bills')->where('id', input("billid"))->first();
-        $account = Database::table('accounts')->where('id', input('account'))->first();
+        $accountId = input("account") != "" ? input("account") : $bills->account;
+        $account = Database::table('accounts')->where('id', $accountId)->first();
         $user = Auth::user();
         $type = input('type');
 
@@ -188,6 +189,10 @@ class Bills {
             );
             
             Database::table('bills')->where('id',input('billid'))->update($data);
+            Database::table('expenses')->where('title', $bills->title)->where('user', $user->id)->update(array(
+                'title' => escape(input('title')),
+                'updated_at' => date('Y-m-d H:i:s')
+            ));
 
         } else {
             $advance = input('advance');
@@ -223,7 +228,7 @@ class Bills {
                 'accountId' => $bills->account,
                 'fromAmount' => $account->balance,
                 'toAmount' => $account->balance - $amount,
-                'type' => '4',
+                'type' => 4,
                 'date_added' => date('Y-m-d H:i:s')
             );
 
