@@ -127,6 +127,7 @@ class Bills {
             $balance = $account->balance - $amount;
         }
 
+        Database::table('accounts')->where('id', $accountId)->update(array("balance" => $balance));
         return true;
     }
 
